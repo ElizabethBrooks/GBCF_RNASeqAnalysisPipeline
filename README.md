@@ -1,9 +1,7 @@
-# TranscriptomeAnalysisPipeline_DaphniaUVTolerance
+# RNA-seq Analysis Pipeline
 Repository for scripts used to analyze short paired-end RNA sequence reads for Daphnia UV tolerance treatments.
 
 To avoid uploading outputs to this repository, the output paths for these scripts should be set in separate folders from this directory.
-
-## RNA-seq Analysis Pipeline
 
 ## Running Scripts
 * The input and output paths need to be set using the *inputPaths.txt* and *outputPaths.txt* files in the *InputData* directory.
