@@ -8,3 +8,6 @@ Be sure to read the *usage notes* at the beginning of the file for any script th
 
 ## Tutorial - Exact Tests with edgeR
 https://morphoscape.wordpress.com/2020/09/01/exact-tests-and-plots-with-edger-basic-differential-expression-analysis/
+
+## edgeR Manual
+https://www.bioconductor.org/packages/release/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf
