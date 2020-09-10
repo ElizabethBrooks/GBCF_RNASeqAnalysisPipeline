@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
-#Usage: Rscript exactTest_edgeR.r countsFile.csv startColPos endColPos
-#Usage Ex: Rscript exactTest_edgeR.r daphnia_countsFile.csv 1 6
+#Usage: Rscript exactTest_edgeR.r countsFile.csv startColumn endColumn
+#Usage Ex: Rscript exactTest_edgeR.r daphnia_geneCounted.csv 1 6
 #R script to perform statistical analysis of gene count tables using edgeR exact test
 
 #Install edgeR, this should only need to be done once
