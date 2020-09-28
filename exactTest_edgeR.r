@@ -4,7 +4,9 @@
 #R script to perform statistical analysis of gene count tables using edgeR exact test
 
 #Install edgeR, this should only need to be done once
-#bioLite("edgeR")
+#if (!requireNamespace("BiocManager", quietly = TRUE))
+#    install.packages("BiocManager")
+#BiocManager::install("edgeR")
 
 #Load the edgeR library
 library("edgeR")
@@ -22,9 +24,6 @@ keep <- filterByExpr(list)
 list <- list[keep, , keep.lib.sizes=FALSE]
 #Calculate normalized factors
 list <- calcNormFactors(list)
-#Write normalized counts to file
-normList <- cpm(list, normalized.lib.sizes=TRUE)
-write.table(normList, file="normalizedCounts.csv", sep=",", row.names=TRUE)
 
 #Produce a matrix of pseudo-counts
 #Estimate common dispersion and tagwise dispersions
@@ -34,5 +33,3 @@ list <- estimateDisp(list)
 tested <- exactTest(list, pair=c("ctrl", "treat"))
 #Create results table of DE genes
 resultsTbl <- topTags(tested, n=nrow(tested$table))$table
-#Output resulting table
-write.table(resultsTbl, file="exactTestResults.csv", sep=",", row.names=TRUE)
