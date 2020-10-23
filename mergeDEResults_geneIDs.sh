@@ -5,7 +5,7 @@
 
 #Loop over DE analysis results
 header="START"
-for f in *_exactTest.csv; do
+for f in *_DEResults.csv; do
 	#Determine genotype based on column numbers
 	if [[ $f == "1_6"* ]]; then #Y05
 		genotype="Y05"
