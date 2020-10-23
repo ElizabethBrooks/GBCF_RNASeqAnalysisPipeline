@@ -11,8 +11,13 @@
 #Load the edgeR library
 library("edgeR")
 
+#Set index range for selected genotype
+start=args[2]
+end=args[3]
+outputName=paste(start,end,"DEResults.csv",sep="_")
+
 #Import gene count data
-countsTable <- read.csv(file=args[1], row.names="gene")[ ,args[2]:args[3]]
+countsTable <- read.csv(file=args[1], row.names="gene")[ ,start:end]
 #Add grouping factor
 group <- factor(c(rep("ctrl",3),rep("treat",3)))
 #Create DGE list object
@@ -33,3 +38,6 @@ list <- estimateDisp(list)
 tested <- exactTest(list, pair=c("ctrl", "treat"))
 #Create results table of DE genes
 resultsTbl <- topTags(tested, n=nrow(tested$table))$table
+#Write test results to csv file
+write.table(resultsTbl, file=outputName, sep=",", row.names=TRUE)
+
