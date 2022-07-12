@@ -2,7 +2,7 @@
 #$ -M ebrooks5@nd.edu
 #$ -m abe
 #$ -r n
-#$ -N fastqc_fastqc_projects_jobOutput
+#$ -N fastqc_projects_jobOutput
 #$ -pe smp 8
 #Script to perform fastqc quality control of paired end reads
 #Usage: qsub fastqc_projects.sh inputsFile
@@ -25,6 +25,7 @@ outputsPath=$(grep "outputs:" ../"InputData/"$inputsFile | tr -d " " | sed "s/ou
 #Make a new directory for project analysis
 projectDir=$(basename $readPath)
 outputsPath=$outputsPath"/"$projectDir
+mkdir $outputsPath
 
 #Make a new directory for qc
 qcOut=$outputsPath"/qc"
