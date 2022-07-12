@@ -1,0 +1,5 @@
+pairedReads: /afs/crc.nd.edu/group/genomics/R2D2/220707_Yoon_Jurkat_Pool1_RNAseq
+adapter: /afs/crc.nd.edu/x86_64_linux/bio/Trimmomatic/0.32/adapters/TruSeq3-PE.fa:2:30:10
+genomeReference: 
+genomeFeatures: 
+outputs: /scratch365/ebrooks5/yoon_July2022

@@ -2,4 +2,4 @@ pairedReads: /afs/crc.nd.edu/group/genomics/R2D2/220705_Yoon_Adipocyte_Pool2_RNA
 adapter: /afs/crc.nd.edu/x86_64_linux/bio/Trimmomatic/0.32/adapters/TruSeq3-PE.fa:2:30:10
 genomeReference: /afs/crc.nd.edu/group/genomics/lando/Yoon-Sangnam_AdiopoctyeStimulation_RNAseq/Mus_musculus.GRCm39.dna.primary_assembly.fa
 genomeFeatures: /afs/crc.nd.edu/group/genomics/lando/Yoon-Sangnam_AdiopoctyeStimulation_RNAseq/Mus_musculus.GRCm39.104.gtf
-geneCounts: /scratch365/ebrooks5/yoon_July2022/geneCounts_cleaned.csv
+outputs: /scratch365/ebrooks5/yoon_July2022
