@@ -33,28 +33,28 @@ fastqc -version > "summary.txt"
 #Loop through all forward and reverse reads and run trimmomatic on each pair
 for f1 in "$readPath"/*_R1_001.fastq.gz; do
 	#Trim extension from current file name
-	curSample=$(echo $f1 | sed 's/._001\.fastq\.gz//')
+	curSample=$(echo $f1 | sed 's/_R._001\.fastq\.gz//')
 	#Set paired file name
-	#f2=$curSample"2_001.fastq.gz"
+	f2=$curSample"_R2_001.fastq.gz"
 	#Print status message
 	echo "Processing $curSample"
 	#Perform QC on both paired end reads for the current sample
-	#fastqc $f1 -o $qcOut --extract
-	#fastqc $f2 -o $qcOut --extract
+	fastqc $f1 -o $qcOut --extract
+	fastqc $f2 -o $qcOut --extract
 	#Quickly check the QC results of the first pair
-	#if grep -iF "WARN" $curSample"1_001_fastqc/summary.txt"; then
-	#	grep -iF "WARN" $curSample"1_001_fastqc/summary.txt" > $curSample"1_001_fastqc_report.txt"
-	#fi
-	#if grep -iF "FAIL" $curSample"1_001_fastqc/summary.txt"; then
-	#	grep -iF "FAIL" $curSample"1_001_fastqc/summary.txt" > $curSample"1_001_fastqc_report.txt"
-	#fi
+	if grep -iF "WARN" $curSample"_R1_001_fastqc/summary.txt"; then
+		grep -iF "WARN" $curSample"_R1_001_fastqc/summary.txt" > $curSample"_R1_001_fastqc_report.txt"
+	fi
+	if grep -iF "FAIL" $curSample"_R1_001_fastqc/summary.txt"; then
+		grep -iF "FAIL" $curSample"_R1_001_fastqc/summary.txt" > $curSample"_R1_001_fastqc_report.txt"
+	fi
 	#Quickly check the QC results of the second pair
-	#if grep -iF "WARN" $curSample"2_001_fastqc/summary.txt"; then
-	#	grep -iF "WARN" $curSample"2_001_fastqc/summary.txt" > $curSample"2_001_fastqc_report.txt"
-	#fi
-	#if grep -iF "FAIL" $curSample"2_001_fastqc/summary.txt"; then
-	#	grep -iF "FAIL" $curSample"2_001_fastqc/summary.txt" > $curSample"2_001_fastqc_report.txt"
-	#fi
+	if grep -iF "WARN" $curSample"_R2_001_fastqc/summary.txt"; then
+		grep -iF "WARN" $curSample"_R2_001_fastqc/summary.txt" > $curSample"_R2_001_fastqc_report.txt"
+	fi
+	if grep -iF "FAIL" $curSample"_R2_001_fastqc/summary.txt"; then
+		grep -iF "FAIL" $curSample"_R2_001_fastqc/summary.txt" > $curSample"_R2_001_fastqc_report.txt"
+	fi
 	echo "Processed!"
 done
 #Print status message
