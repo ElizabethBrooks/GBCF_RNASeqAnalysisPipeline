@@ -5,8 +5,8 @@
 #$ -N qc_fastqc_yoon_jobOutput
 #$ -pe smp 8
 #Script to perform fastqc quality control of paired end reads
-#Usage: qsub qc_fastqc_yoon.sh
-#Usage Ex: qsub qc_fastqc_yoon.sh
+#Usage: qsub fastqc_yoon.sh
+#Usage Ex: qsub fastqc_yoon.sh
 
 #Required modules for ND CRC servers
 module load bio

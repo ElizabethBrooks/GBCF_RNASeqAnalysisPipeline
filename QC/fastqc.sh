@@ -2,11 +2,11 @@
 #$ -M ebrooks5@nd.edu
 #$ -m abe
 #$ -r n
-#$ -N qc_fastqc_jobOutput
+#$ -N fastqc_jobOutput
 #$ -pe smp 8
 #Script to perform fastqc quality control of paired end reads
-#Usage: qsub qc_fastqc.sh readsDirectory
-#Usage Ex: qsub qc_fastqc.sh assembled_trinity_run1
+#Usage: qsub fastqc.sh readsDirectory
+#Usage Ex: qsub fastqc.sh assembled_trinity_run1
 
 #Required modules for ND CRC servers
 module load bio
