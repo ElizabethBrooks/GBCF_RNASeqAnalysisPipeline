@@ -11,11 +11,11 @@
 #Required modules for ND CRC servers
 module load bio
 #Retrieve paired reads absolute path for alignment
-readPath=$(grep "pairedReads:" ../InputData/inputPaths.txt | tr -d " " | sed "s/pairedReads://g")
+readPath=$(grep "pairedReads:" ../InputData/inputPaths_yoon.txt | tr -d " " | sed "s/pairedReads://g")
 #Retrieve adapter absolute path for alignment
-adapterPath=$(grep "adapter:" ../InputData/inputPaths.txt | tr -d " " | sed "s/adapter://g")
+adapterPath=$(grep "adapter:" ../InputData/inputPaths_yoon.txt | tr -d " " | sed "s/adapter://g")
 #Retrieve trimming outputs absolute path
-outputsPath=$(grep "qc:" ../InputData/outputPaths.txt | tr -d " " | sed "s/qc://g")
+outputsPath=$(grep "qc:" ../InputData/outputPaths_yoon.txt | tr -d " " | sed "s/qc://g")
 #Move to outputs directory
 cd $(dirname $outputsPath)
 #Make a new directory for trimming
