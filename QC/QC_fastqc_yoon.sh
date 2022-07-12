@@ -2,12 +2,11 @@
 #$ -M ebrooks5@nd.edu
 #$ -m abe
 #$ -r n
-#$ -N trimmingQC_trimmomaticFastqc_jobOutput
+#$ -N qc_fastqc_yoon_jobOutput
 #$ -pe smp 8
-#Script to perform trimmomatic trimming and fastqc quality control
-# of paired end reads
-#Usage: qsub trimmingQC_trimmomaticFastqc.sh
-#Usage Ex: qsub trimmingQC_trimmomaticFastqc.sh
+#Script to perform fastqc quality control of paired end reads
+#Usage: qsub qc_fastqc_yoon.sh
+#Usage Ex: qsub qc_fastqc_yoon.sh
 
 #Required modules for ND CRC servers
 module load bio
