@@ -29,9 +29,9 @@ fi
 #Move to the new directory
 cd $qcOut
 #Report software version
-fastqc -version > $outputsPath"/summary.txt"
+fastqc -version > "summary.txt"
 #Loop through all forward and reverse reads and run trimmomatic on each pair
-for f1 in "$readPath"/*_R1_001.fastq.gz; do
+for f1 in $readPath"/*_R1_001.fastq.gz"; do
 	#Print status message
 	echo "Processing $f1"
 	#Trim extension from current file name
