@@ -32,31 +32,28 @@ cd $qcOut
 fastqc -version > "summary.txt"
 #Loop through all forward and reverse reads and run trimmomatic on each pair
 for f1 in $readPath"/*_R1_001.fastq.gz"; do
-	#Print status message
-	echo "Processing $f1"
 	#Trim extension from current file name
 	curSample=$(echo $f1 | sed 's/._001\.fastq\.gz//')
-	#Trim file path from current file name
-	curSampleNoPath=$(basename $f1)
-	curSampleNoPath=$(echo $curSampleNoPath | sed 's/._001\.fastq\.gz//')
 	#Set paired file name
 	f2=$curSample"2_001.fastq.gz"
+	#Print status message
+	echo "Processing $curSample"
 	#Perform QC on both paired end reads for the current sample
 	fastqc $f1 -o $qcOut --extract
 	fastqc $f2 -o $qcOut --extract
 	#Quickly check the QC results of the first pair
 	if grep -iF "WARN" $curSample"1_001_fastqc/summary.txt"; then
-		grep -iF "WARN" $curSample"1_001_fastqc/summary.txt" > $curSampleNoPath"1_001_fastqc_report.txt"
+		grep -iF "WARN" $curSample"1_001_fastqc/summary.txt" > $curSample"1_001_fastqc_report.txt"
 	fi
 	if grep -iF "FAIL" $curSample"1_001_fastqc/summary.txt"; then
-		grep -iF "FAIL" $curSample"1_001_fastqc/summary.txt" > $curSampleNoPath"1_001_fastqc_report.txt"
+		grep -iF "FAIL" $curSample"1_001_fastqc/summary.txt" > $curSample"1_001_fastqc_report.txt"
 	fi
 	#Quickly check the QC results of the second pair
 	if grep -iF "WARN" $curSample"2_001_fastqc/summary.txt"; then
-		grep -iF "WARN" $curSample"2_001_fastqc/summary.txt" > $curSampleNoPath"2_001_fastqc_report.txt"
+		grep -iF "WARN" $curSample"2_001_fastqc/summary.txt" > $curSample"2_001_fastqc_report.txt"
 	fi
 	if grep -iF "FAIL" $curSample"2_001_fastqc/summary.txt"; then
-		grep -iF "FAIL" $curSample"2_001_fastqc/summary.txt" > $curSampleNoPath"2_001_fastqc_report.txt"
+		grep -iF "FAIL" $curSample"2_001_fastqc/summary.txt" > $curSample"2_001_fastqc_report.txt"
 	fi
 done
 #Print status message
