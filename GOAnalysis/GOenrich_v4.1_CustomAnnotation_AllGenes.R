@@ -1,0 +1,143 @@
+#if (!requireNamespace("BiocManager", quietly=TRUE))
+#   install.packages("BiocManager")
+#BiocManager::install('______')
+
+
+#Load the libraries
+library(filesstrings)
+library(topGO)
+library(GO.db)
+library(reshape2)
+library(ggplot2)
+library(Rgraphviz)
+
+#Load in DGE Results for the genotype
+genotype_list <- c('Y05', 'Y023', 'E05', 'R2', 'PA', 'Sierra')
+genotype <- genotype_list[7]
+
+DGE_results_table <- read.csv(file = paste('/Users/bryanmichalek/Documents/Notre_Dame/Spring 2021/Pfrender/DGE_results/', genotype, '_DGE_results.csv', sep = ''), row.names = 1)
+
+#Read in custom GO annotations
+GOmaps <- readMappings(file='/Users/bryanmichalek/Documents/Notre_Dame/Spring 2021/Pfrender/GO_Custom_Annotations_Results/gene2GO_PA42_v4.1_transcripts.map',  sep='\t',  IDsep=',')
+
+#Create named list of all genes (gene universe) and p-values. The gene universe is set to be
+#the list of all genes contained in the gene2GO list of annotated genes.
+list_genes <- as.numeric(DGE_results_table$PValue)
+list_genes <- setNames(list_genes, rownames(DGE_results_table))
+list_genes_filtered <- list_genes[names(list_genes) %in% names(GOmaps)]
+
+#Create function to return list of interesting DE genes (0 == not significant, 1 == significant)
+get_interesting_DE_genes <- function(geneUniverse){
+  interesting_DE_genes <- rep(0, length(geneUniverse))
+  for(i in 1:length(geneUniverse)){
+    if(geneUniverse[i] < 0.05){
+      interesting_DE_genes[i] = 1
+    }
+  }
+  interesting_DE_genes <- setNames(interesting_DE_genes, names(geneUniverse))
+  return(interesting_DE_genes)
+}
+
+#Create topGOdata objects for enrichment analysis (1 for each ontology)
+BP_GO_data <- new('topGOdata', ontology = 'BP', allGenes = list_genes_filtered, 
+                  geneSel = get_interesting_DE_genes, nodeSize = 10, annot = annFUN.gene2GO, 
+                  gene2GO = GOmaps)
+MF_GO_data <- new('topGOdata', ontology = 'MF', allGenes = list_genes_filtered, 
+                  geneSel = get_interesting_DE_genes, nodeSize = 10, annot = annFUN.gene2GO, 
+                  gene2GO = GOmaps)
+CC_GO_data <- new('topGOdata', ontology = 'CC', allGenes = list_genes_filtered, 
+                  geneSel = get_interesting_DE_genes, nodeSize = 10, annot = annFUN.gene2GO, 
+                  gene2GO = GOmaps)
+
+#Summary functions
+#numGenes(BP_GO_data)
+#sigGenes(BP_GO_data)
+
+#PerformGO enrichment on topGOdata object
+BP_GO_results <- runTest(BP_GO_data, statistic = 'Fisher')
+MF_GO_results <- runTest(MF_GO_data, statistic = 'Fisher')
+CC_GO_results <- runTest(CC_GO_data, statistic = 'Fisher')
+
+#If you want to see names of GO terms (can filter for only significant ones if you want...etc.)
+#head(names(BP_GO_results@score))
+#geneData(BP_GO_results)
+
+#Visualization/plot stuff
+    #Store p-values as named list... ('score(x)' or 'x@score' returns named list of p-val's 
+    #where names are the GO terms)
+pval_BP_GO <- score(BP_GO_results)
+pval_MF_GO <- score(MF_GO_results)
+pval_CC_GO <- score(CC_GO_results)
+
+    #plot histogram to see range of p-values
+par(mfrow=c(3, 1))
+hist(pval_BP_GO, 35, xlab = 'p-values', main = 'Range of BP GO term p-values')
+hist(pval_MF_GO, 35, xlab = 'p-values', main = 'Range of BP GO term p-values')
+hist(pval_CC_GO, 35, xlab = 'p-values', main = 'Range of BP GO term p-values')
+dev.off()
+
+    #GenTable to get statistics on GO terms
+list_BP_GO_terms <- usedGO(BP_GO_data)
+list_MF_GO_terms <- usedGO(MF_GO_data)
+list_CC_GO_terms <- usedGO(CC_GO_data)
+
+BP_GO_results_table <- GenTable(BP_GO_data, weightFisher = BP_GO_results, orderBy = 'weightFisher', 
+                                topNodes = length(list_BP_GO_terms))
+MF_GO_results_table <- GenTable(MF_GO_data, weightFisher = MF_GO_results, orderBy = 'weightFisher', 
+                                topNodes = length(list_MF_GO_terms))
+CC_GO_results_table <- GenTable(CC_GO_data, weightFisher = CC_GO_results, orderBy = 'weightFisher', 
+                                topNodes = length(list_CC_GO_terms))
+
+    #Fix Small error in GenTable... weightFisher is listed as CHAR but should be a DOUBLE for sorting purposes later
+BP_GO_results_table$weightFisher <- as.double(BP_GO_results_table$weightFisher)
+MF_GO_results_table$weightFisher <- as.double(MF_GO_results_table$weightFisher)
+CC_GO_results_table$weightFisher <- as.double(CC_GO_results_table$weightFisher)
+
+    #Add column for adjusted p_value using p.adjust()
+BP_GO_results_table['p_adjusted'] <- p.adjust(BP_GO_results_table$weightFisher, method = 'bonferroni')
+MF_GO_results_table['p_adjusted'] <- p.adjust(MF_GO_results_table$weightFisher, method = 'bonferroni')
+CC_GO_results_table['p_adjusted'] <- p.adjust(CC_GO_results_table$weightFisher, method = 'bonferroni')
+
+
+    #Write table of all GO terms (both sig and non-sig) to csv file for future use
+write.csv(BP_GO_results_table, file = paste(genotype, 'all_genes_BP_GO_terms.csv', sep = '_'), row.names = TRUE)
+write.csv(MF_GO_results_table, file = paste(genotype, 'all_genes_MF_GO_terms.csv', sep = '_'), row.names = TRUE)
+write.csv(CC_GO_results_table, file = paste(genotype, 'all_genes_CC_GO_terms.csv', sep = '_'), row.names = TRUE)
+
+    #Table of only the significant GO terms
+BP_sigGO_results_table <- BP_GO_results_table[BP_GO_results_table$p_adjusted <= 0.05, ]
+MF_sigGO_results_table <- MF_GO_results_table[MF_GO_results_table$p_adjusted <= 0.05, ]
+CC_sigGO_results_table <- CC_GO_results_table[CC_GO_results_table$p_adjusted <= 0.05, ]
+
+    #showGroupDensity example for most significant GO term
+BP_topSigGO_ID <- BP_GO_results_table[which(BP_GO_results_table$p_adjusted == min(BP_GO_results_table$p_adjusted)),
+                                      'GO.ID']
+MF_topSigGO_ID <- MF_GO_results_table[which(MF_GO_results_table$p_adjusted == min(MF_GO_results_table$p_adjusted)),
+                                      'GO.ID']
+CC_topSigGO_ID <- CC_GO_results_table[which(CC_GO_results_table$p_adjusted == min(CC_GO_results_table$p_adjusted)),
+                                      'GO.ID']
+
+pdf(file = paste(genotype, 'All_Genes','TopSigGO_Density.pdf', sep = '_'))
+showGroupDensity(BP_GO_data, whichGO = BP_topSigGO_ID, ranks = TRUE)
+showGroupDensity(MF_GO_data, whichGO = MF_topSigGO_ID, ranks = TRUE)
+showGroupDensity(CC_GO_data, whichGO = CC_topSigGO_ID, ranks = TRUE)
+dev.off()
+
+    #printGraph to plot subgraphs induced by the most significant GO terms...saves to a file
+printGraph(BP_GO_data, BP_GO_results, firstSigNodes = 5, 
+           fn.prefix = paste(genotype, 'all_genes','BP_GO', sep = '_'), useInfo = 'all', pdfSW = TRUE)
+printGraph(MF_GO_data, MF_GO_results, firstSigNodes = 5, 
+           fn.prefix = paste(genotype, 'all_genes', 'MF_GO', sep = '_'), useInfo = 'all', pdfSW = TRUE)
+printGraph(CC_GO_data, CC_GO_results, firstSigNodes = 5, 
+           fn.prefix = paste(genotype, 'all_genes', 'CC_GO', sep = '_'), useInfo = 'all', pdfSW = TRUE)
+
+
+#Move some files around just to help myself stay organized
+file.move(paste(getwd(), '/', genotype, "_All_Genes_TopSigGO_Density.pdf", sep = ''), paste("/Users/bryanmichalek/Documents/Notre_Dame/Spring 2021/Pfrender/GO_Custom_Annotations_Results/", genotype, "_all_genes", sep = ''), overwrite = TRUE)
+file.move(paste(getwd(), '/', genotype, "_all_genes_BP_GO_weight01_5_all.pdf", sep = ''), paste("/Users/bryanmichalek/Documents/Notre_Dame/Spring 2021/Pfrender/GO_Custom_Annotations_Results/", genotype, "_all_genes", sep = ''), overwrite = TRUE)
+file.move(paste(getwd(), '/', genotype, "_all_genes_MF_GO_weight01_5_all.pdf", sep = ''), paste("/Users/bryanmichalek/Documents/Notre_Dame/Spring 2021/Pfrender/GO_Custom_Annotations_Results/", genotype, "_all_genes", sep = ''), overwrite = TRUE)
+file.move(paste(getwd(), '/', genotype, "_all_genes_CC_GO_weight01_5_all.pdf", sep = ''), paste("/Users/bryanmichalek/Documents/Notre_Dame/Spring 2021/Pfrender/GO_Custom_Annotations_Results/", genotype, "_all_genes", sep = ''), overwrite = TRUE)
+file.move(paste(getwd(), '/', genotype, "_all_genes_BP_GO_terms.csv", sep = ''), paste("/Users/bryanmichalek/Documents/Notre_Dame/Spring 2021/Pfrender/GO_Custom_Annotations_Results/", genotype, "_all_genes", sep = ''), overwrite = TRUE)
+file.move(paste(getwd(), '/', genotype, "_all_genes_MF_GO_terms.csv", sep = ''), paste("/Users/bryanmichalek/Documents/Notre_Dame/Spring 2021/Pfrender/GO_Custom_Annotations_Results/", genotype, "_all_genes", sep = ''), overwrite = TRUE)
+file.move(paste(getwd(), '/', genotype, "_all_genes_CC_GO_terms.csv", sep = ''), paste("/Users/bryanmichalek/Documents/Notre_Dame/Spring 2021/Pfrender/GO_Custom_Annotations_Results/", genotype, "_all_genes", sep = ''), overwrite = TRUE)
+

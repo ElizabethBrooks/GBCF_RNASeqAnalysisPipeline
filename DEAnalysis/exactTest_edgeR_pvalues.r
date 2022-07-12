@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
-#Usage: Rscript exactTest_edgeR.r countsFile.csv startColPos endColPos FDR genotype
-#Usage Ex: Rscript exactTest_edgeR.r genome_sortedName_samtoolsHisat2_run1_counted_htseq_run1 31 36 0.10 Sierra
+#Usage: Rscript exactTest_edgeR.r countsFile.csv startColPos endColPos genotype
+#Usage Ex: Rscript exactTest_edgeR.r genome_sortedName_samtoolsHisat2_run1_counted_htseq_run1 31 36 Sierra
 #R script to perform statistical analysis of gene count tables using edgeR exact test
 
 #Install edgeR, this should only need to be done once

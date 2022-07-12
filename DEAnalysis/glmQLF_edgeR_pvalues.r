@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
-#Usage: Rscript glmQLF_edgeR_pvalues.r countsFile startColumn endColumn factorGroupingFile FDR
-#Usage Ex: Rscript glmQLF_edgeR_pvalues.r cleaned.csv 1 24 expDesign_Olympics_GRP1.csv 0.10
+#Usage: Rscript glmQLF_edgeR_pvalues.r countsFile startColumn endColumn factorGroupingFile
+#Usage Ex: Rscript glmQLF_edgeR_pvalues.r cleaned.csv 1 24 expDesign_Olympics_GRP1.csv
 #R script to perform statistical analysis of gene count tables using edgeR GLM
 
 #Install edgeR and statmod, this should only need to be done once
@@ -18,22 +18,17 @@ args = commandArgs(trailingOnly=TRUE)
 
 #Import gene count data
 countsTable <- read.csv(file=args[1], row.names="gene")[ ,args[2]:args[3]]
-#head(countsTable)
 #Import grouping factor
 targets <- read.csv(file=args[4], row.names="sample")
-#Retrieve input FDR cutoff
-fdrCut=as.numeric(args[5])
 
 #Setup a design matrix
 group <- factor(paste(targets$treatment,targets$genotype,sep="."))
-#cbind(targets,Group=group)
 #Create DGE list object
 list <- DGEList(counts=countsTable,group=group)
 colnames(list) <- targets$sample
 
 #Retain genes only if it is expressed at a minimum level
 keep <- filterByExpr(list)
-summary(keep)
 list <- list[keep, , keep.lib.sizes=FALSE]
 
 #Use TMM normalization to eliminate composition biases
@@ -70,8 +65,8 @@ write.table(tagsTblANOVA, file="glmQLF_2WayANOVA_UVvsVIS_topTags.csv", sep=",", 
 
 #Test whether the average across all tolerant groups is equal to the average across
 #all not tolerant groups, to examine the overall effect of tolerance
-con.TvsN <- makeContrasts(TvsN = (UV.Y05 + VIS.Y05 + UV.E05 + VIS.E05)/4
-  - (UV.Y023 + VIS.Y023 + UV.R2 + VIS.R2)/4,
+con.TvsN <- makeContrasts(TvsN = (UV.Y05 + VIS.Y05 + UV.Y023 + VIS.Y023)/4
+  - (UV.E05 + VIS.E05 + UV.R2 + VIS.R2)/4,
   levels=design)
 
 #Look at genes expressed across all UV groups using QL F-test
@@ -83,8 +78,8 @@ write.table(tagsTblANOVATN, file="glmQLF_2WayANOVA_TvsN_topTags.csv", sep=",", r
 #Test whether there is an interaction effect
 con.Inter <- makeContrasts(Inter = ((UV.E05 + UV.R2 + UV.Y023 + UV.Y05)/4
   - (VIS.E05 + VIS.R2 + VIS.Y023 + VIS.Y05)/4)
-  - ((UV.Y05 + VIS.Y05 + UV.E05 + VIS.E05)/4
-  - (UV.Y023 + VIS.Y023 + UV.R2 + VIS.R2)/4),
+  - ((UV.Y05 + VIS.Y05 + UV.Y023 + VIS.Y023)/4
+  - (UV.E05 + VIS.E05 + UV.R2 + VIS.R2)/4),
   levels=design)
 
 #Look at genes expressed across all UV groups using QL F-test

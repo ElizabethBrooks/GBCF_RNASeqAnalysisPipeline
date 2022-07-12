@@ -8,14 +8,14 @@
 #Retrieve experimental design data path
 designPath="../InputData/expDesign_olympics.csv"
 #Retrieve analysis inputs path
-inputsPath=$(grep "DEAnalysis:" ../InputData/outputPaths.txt | tr -d " " | sed "s/DEAnalysis://g")
-inFile="$inputsPath"/cleaned.csv
+inputsPath="/home/mae/Documents/RNASeq_Workshop_ND"
+inFile="$inputsPath"/"geneCounts_cleaned_PA42_v4.1.csv"
 
 #Create directory for output files
-outDir="$inputsPath"/glm"$1"Analysis
+outDir="$inputsPath"/glmAnalysis
 mkdir $outDir
 
-#Perform DE analysis using glmLRT in edgeR 
+#Perform DE analysis using glmQLF in edgeR 
 Rscript glmQLF_edgeR_pvalues.r "$inFile" 1 24 "$designPath"
 
 #Move produced tables

@@ -1,0 +1,4 @@
+qc: /scratch365/ebrooks5/yoon_July2022/qc
+trimming: /scratch365/ebrooks5/yoon_July2022/trimmed
+aligningGenome: /scratch365/ebrooks5/yoon_July2022/aligned
+DEAnalysis: /scratch365/ebrooks5/yoon_July2022
