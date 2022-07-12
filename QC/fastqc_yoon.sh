@@ -31,7 +31,7 @@ cd $qcOut
 #Report software version
 fastqc -version > "summary.txt"
 #Loop through all forward and reverse reads and run trimmomatic on each pair
-for f1 in $readPath"/*_R1_001.fastq.gz"; do
+for f1 in "$readPath"/*_R1_001.fastq.gz; do
 	#Trim extension from current file name
 	curSample=$(echo $f1 | sed 's/._001\.fastq\.gz//')
 	#Set paired file name
@@ -55,6 +55,7 @@ for f1 in $readPath"/*_R1_001.fastq.gz"; do
 	#if grep -iF "FAIL" $curSample"2_001_fastqc/summary.txt"; then
 	#	grep -iF "FAIL" $curSample"2_001_fastqc/summary.txt" > $curSample"2_001_fastqc_report.txt"
 	#fi
+	echo "Processed!"
 done
 #Print status message
 echo "Analysis complete!"
