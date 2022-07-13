@@ -50,7 +50,7 @@ for f1 in "$readPath"/*_R1_001.fastq.gz; do
 	#Set paired file name
 	f2=$curSample"_R2_001.fastq.gz"
 	#Trim to sample tag
-	sampleTag=$(basename | sed 's/_R._001\.fastq\.gz//')
+	sampleTag=$(basename $f1 | sed 's/_R._001\.fastq\.gz//')
 	#Print status message
 	echo "Processing $curSample"
 	#Determine phred score for trimming
