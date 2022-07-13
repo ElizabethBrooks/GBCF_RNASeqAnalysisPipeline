@@ -39,9 +39,9 @@ fi
 cd $trimOut
 
 #Name output file of inputs
-#inputOutFile=$trimOut"/summary.txt"
+inputOutFile="summary.txt"
 #Add software version to outputs
-#trimmomatic -version > $inputOutFile
+trimmomatic -version > $inputOutFile
 
 #Loop through all forward and reverse reads and run trimmomatic on each pair
 for f1 in "$readPath"/*_R1_001.fastq.gz; do
@@ -64,14 +64,12 @@ for f1 in "$readPath"/*_R1_001.fastq.gz; do
 		#echo "ERROR: Illumina encoding not found for $curSample" >> $inputOutFile
 		exit 1
 	fi
-	echo "Phred score of $score"
 	#Perform adapter trimming on paired reads
 	#using 8 threads
 	#removed HEADCROP:13
-	#trimmomatic PE -threads 8 -phred"$score" $f1 $f2 $trimOut"/"$sampleTag"_pForward.fq.gz" $trimOut"/"$sampleTag"_uForward.fq.gz" $trimOut"/"$sampleTag"_pReverse.fq.gz" $trimOut"/"$sampleTag"_uReverse.fq.gz" ILLUMINACLIP:"$adapterPath" LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
+	trimmomatic PE -threads 8 -phred"$score" $f1 $f2 $sampleTag"_pForward.fq.gz" $sampleTag"_uForward.fq.gz" $sampleTag"_pReverse.fq.gz" $sampleTag"_uReverse.fq.gz" ILLUMINACLIP:"$adapterPath" LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
 	#Add run inputs to output summary file
-	#echo $sampleTag >> $inputOutFile
-	#echo trimmomatic PE -threads 8 -phred"$score" $f1 $f2 $trimOut"/"$sampleTag"_pForward.fq.gz" $trimOut"/"$sampleTag"_uForward.fq.gz" $trimOut"/"$sampleTag"_pReverse.fq.gz" $trimOut"/"$sampleTag"_uReverse.fq.gz" ILLUMINACLIP:"$adapterPath" LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36 >> $inputOutFile
+	echo trimmomatic PE -threads 8 -phred"$score" $f1 $f2 $sampleTag"_pForward.fq.gz" $sampleTag"_uForward.fq.gz" $sampleTag"_pReverse.fq.gz" $sampleTag"_uReverse.fq.gz" ILLUMINACLIP:"$adapterPath" LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36 >> $inputOutFile
 	#Print status message
 	echo "Processed!"
 done
