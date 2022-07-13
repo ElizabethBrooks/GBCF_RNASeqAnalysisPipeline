@@ -1,0 +1,86 @@
+#!/bin/bash
+#$ -M ebrooks5@nd.edu
+#$ -m abe
+#$ -r n
+#$ -N hisat2_projects_jobOutput
+#$ -pe smp 8
+#Script to perform hisat2 alignment of trimmed paired end reads
+#Usage: qsub hisat2_projects.sh inputsFile
+#Usage Ex: qsub hisat2_projects.sh inputPaths_yoon_adipocyte_July2022.txt
+#Usage Ex: qsub hisat2_projects.sh inputPaths_yoon_junkrat_July2022.txt
+
+#Required modules for ND CRC servers
+module load bio
+
+#Retrieve input argument of a inputs file
+inputsFile=$1
+
+#Retrieve genome reference absolute path for alignment
+buildFile=$(grep "genomeReference:" ../"InputData/"$inputsFile | tr -d " " | sed "s/genomeReference://g")
+#Retrieve paired reads absolute path for alignment
+readPath=$(grep "pairedReads:" ../"InputData/"$inputsFile | tr -d " " | sed "s/pairedReads://g")
+#Retrieve adapter absolute path for alignment
+adapterPath=$(grep "adapter:" ../"InputData/"$inputsFile | tr -d " " | sed "s/adapter://g")
+#Retrieve analysis outputs absolute path
+outputsPath=$(grep "outputs:" ../"InputData/"$inputsFile | tr -d " " | sed "s/outputs://g")
+
+#Make a new directory for project analysis
+projectDir=$(basename $readPath)
+outputsPath=$outputsPath"/"$projectDir
+mkdir $outputsPath
+
+#Make a new directory for analysis
+anOut=$outputsPath"/aligned"
+mkdir $anOut
+#Check if the folder already exists
+if [ $? -ne 0 ]; then
+	echo "The $anOut directory already exsists... please remove before proceeding."
+	exit 1
+fi
+#Move to the new directory
+cd $anOut
+
+#Name output file of inputs
+inputOutFile="summary.txt"
+#Add software versions to outputs
+hisat2 -version > $inputOutFile
+samtools --version >> $inputOutFile
+
+#Set trimmed reads absolute path
+trimmedFolder=$outputsPath"/trimmed"
+
+#Build output directory for Hisat reference
+buildOut="$buildInputsPath"/"build"
+#Trim path and file extension from build file
+buildFileNoPath=$(basename $buildFile)
+buildFileNoEx=$(echo $buildFileNoPath | sed 's/\.fasta/\.fa/')
+buildFileNoEx=$(echo $buildFileNoEx | sed 's/\.fa//')
+
+#Loop through all forward and reverse paired reads and run Hisat2 on each pair
+# using 8 threads and samtools to convert output sam files to bam
+for f1 in "$trimmedFolder"/*pForward.fq.gz; do
+	#Trim extension from current file name
+	curSample=$(echo $f1 | sed 's/.pForward\.fq\.gz//')
+	#Trim file path from current file name
+	curSampleNoPath=$(basename $f1)
+	curSampleNoPath=$(echo $curSampleNoPath | sed 's/.pForward\.fq\.gz//')
+	#Create directory for current sample outputs
+	mkdir "$curSampleNoPath"
+	#Print status message
+	echo "Processing $curSampleNoPath"
+	#Run hisat2 with default settings
+	hisat2 -p 8 -q -x "$buildOut"/"$buildFileNoEx" -1 "$f1" -2 "$curSample"_pReverse.fq.gz -S "$curSampleNoPath"/accepted_hits.sam --summary-file "$curSampleNoPath"/alignedSummary.txt
+	#Add sample and hisat2 run inputs to output summary file
+	echo $curSampleNoPath >> $inputOutFile
+	echo "hisat2 -p 8 -q -x" "$buildOut"/"$buildFileNoEx" -1 "$f1" -2 "$curSample"_pReverse.fq.gz -S "$curSampleNoPath"/accepted_hits.sam --summary-file "$curSampleNoPath"/alignedSummary.txt >> "$inputOutFile"
+	#Convert output sam files to bam format for downstream analysis
+	samtools view -@ 8 -bS "$curSampleNoPath"/accepted_hits.sam > "$curSampleNoPath"/accepted_hits.bam
+	#Remove the now converted .sam file
+	rm "$curSampleNoPath"/accepted_hits.sam
+	#Add samtools run inputs to output summary file
+	echo samtools view -@ 8 -bS "$curSampleNoPath"/accepted_hits.sam ">" "$curSampleNoPath"/accepted_hits.bam >> "$inputOutFile"
+	#Print status message
+	echo "Processed!"
+done
+#Print status message
+echo "Analysis complete!"
