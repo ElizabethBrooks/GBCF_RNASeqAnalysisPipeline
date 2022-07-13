@@ -16,7 +16,7 @@ module load bio
 inputsFile=$1
 
 #Retrieve genome reference absolute path for alignment
-buildFile=$(grep "genomeReference:" ../"InputData/"$inputsFile | tr -d " " | sed "s/genomeReference://g")
+ref=$(grep "genomeReference:" ../"InputData/"$inputsFile | tr -d " " | sed "s/genomeReference://g")
 #Retrieve paired reads absolute path for alignment
 readPath=$(grep "pairedReads:" ../"InputData/"$inputsFile | tr -d " " | sed "s/pairedReads://g")
 #Retrieve adapter absolute path for alignment
@@ -29,7 +29,7 @@ projectDir=$(basename $readPath)
 outputsPath=$outputsPath"/"$projectDir
 mkdir $outputsPath
 
-#Make a new directory for analysis
+#Make an outputs directory for analysis
 anOut=$outputsPath"/aligned"
 mkdir $anOut
 #Check if the folder already exists
@@ -37,7 +37,7 @@ if [ $? -ne 0 ]; then
 	echo "The $anOut directory already exsists... please remove before proceeding."
 	exit 1
 fi
-#Move to the new directory
+#Move to the outputs directory
 cd $anOut
 
 #Name output file of inputs
@@ -49,12 +49,22 @@ samtools --version >> $inputOutFile
 #Set trimmed reads absolute path
 trimmedFolder=$outputsPath"/trimmed"
 
-#Build output directory for Hisat reference
-buildOut="$buildInputsPath"/"build"
+#Create build output directory for Hisat reference
+buildOut="build"
+mkdir $buildOut
 #Trim path and file extension from build file
-buildFileNoPath=$(basename $buildFile)
-buildFileNoEx=$(echo $buildFileNoPath | sed 's/\.fasta/\.fa/')
-buildFileNoEx=$(echo $buildFileNoEx | sed 's/\.fa//')
+refNoPath=$(basename $ref)
+refNoEx=$(echo $refNoPath | sed 's/\.fasta/\.fa/')
+refNoEx=$(echo $refNoEx | sed 's/\.fa//')
+#Copy genome build fasta file to hisat2 build folder
+cp "$ref" "$buildOut"/"$refNoEx"
+#Trim file extension
+refNoPath=$(echo $refNoEx | sed 's/\.fa//g')
+#Begin hisat2 build
+echo "Beginning hisat2 build... "
+hisat2-build -p 8 -f "$buildOut"/"$refNoEx" "$buildOut"/"$refNoPath"
+echo hisat2-build -p 8 -f "$buildOut"/"$refNoEx" "$buildOut"/"$refNoPath" >> $inputOutFile
+echo "hisat2 build complete!"
 
 #Loop through all forward and reverse paired reads and run Hisat2 on each pair
 # using 8 threads and samtools to convert output sam files to bam
@@ -69,10 +79,10 @@ for f1 in "$trimmedFolder"/*pForward.fq.gz; do
 	#Print status message
 	echo "Processing $curSampleNoPath"
 	#Run hisat2 with default settings
-	hisat2 -p 8 -q -x "$buildOut"/"$buildFileNoEx" -1 "$f1" -2 "$curSample"_pReverse.fq.gz -S "$curSampleNoPath"/accepted_hits.sam --summary-file "$curSampleNoPath"/alignedSummary.txt
+	hisat2 -p 8 -q -x "$buildOut"/"$refNoEx" -1 "$f1" -2 "$curSample"_pReverse.fq.gz -S "$curSampleNoPath"/accepted_hits.sam --summary-file "$curSampleNoPath"/alignedSummary.txt
 	#Add sample and hisat2 run inputs to output summary file
 	echo $curSampleNoPath >> $inputOutFile
-	echo "hisat2 -p 8 -q -x" "$buildOut"/"$buildFileNoEx" -1 "$f1" -2 "$curSample"_pReverse.fq.gz -S "$curSampleNoPath"/accepted_hits.sam --summary-file "$curSampleNoPath"/alignedSummary.txt >> "$inputOutFile"
+	echo "hisat2 -p 8 -q -x" "$buildOut"/"$refNoEx" -1 "$f1" -2 "$curSample"_pReverse.fq.gz -S "$curSampleNoPath"/accepted_hits.sam --summary-file "$curSampleNoPath"/alignedSummary.txt >> "$inputOutFile"
 	#Convert output sam files to bam format for downstream analysis
 	samtools view -@ 8 -bS "$curSampleNoPath"/accepted_hits.sam > "$curSampleNoPath"/accepted_hits.bam
 	#Remove the now converted .sam file
