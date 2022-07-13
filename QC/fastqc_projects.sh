@@ -19,7 +19,7 @@ inputsFile=$1
 readPath=$(grep "pairedReads:" ../"InputData/"$inputsFile | tr -d " " | sed "s/pairedReads://g")
 #Retrieve adapter absolute path for alignment
 adapterPath=$(grep "adapter:" ../"InputData/"$inputsFile | tr -d " " | sed "s/adapter://g")
-#Retrieve qc outputs absolute path
+#Retrieve analysis outputs absolute path
 outputsPath=$(grep "outputs:" ../"InputData/"$inputsFile | tr -d " " | sed "s/outputs://g")
 
 #Make a new directory for project analysis
@@ -27,7 +27,7 @@ projectDir=$(basename $readPath)
 outputsPath=$outputsPath"/"$projectDir
 mkdir $outputsPath
 
-#Make a new directory for qc
+#Make a new directory for analysis
 qcOut=$outputsPath"/qc"
 mkdir $qcOut
 #Check if the folder already exists
@@ -65,6 +65,7 @@ for f1 in "$readPath"/*_R1_001.fastq.gz; do
 	if grep -iF "FAIL" $curSample"_R2_001_fastqc/summary.txt"; then
 		grep -iF "FAIL" $curSample"_R2_001_fastqc/summary.txt" > $curSample"_R2_001_fastqc_report.txt"
 	fi
+	#Print status message
 	echo "Processed!"
 done
 #Print status message
