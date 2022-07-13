@@ -52,8 +52,9 @@ for f1 in "$readPath"/*_R1_001.fastq.gz; do
 	#Trim to sample tag
 	sampleTag=$(basename $f1 | sed 's/_R._001\.fastq\.gz//')
 	#Print status message
-	echo "Processing $curSample"
+	echo "Processing $sampleTag"
 	#Determine phred score for trimming
+	echo $outputsPath"/qc/"$sampleTag"_R1_001_fastqc/fastqc_data.txt"
 	if grep -iF "Illumina 1.5" $outputsPath"/qc/"$sampleTag"_R1_001_fastqc/fastqc_data.txt"; then
 		score=64
 	elif grep -iF "Illumina 1.9" $outputsPath"/qc/"$sampleTag"_R1_001_fastqc/fastqc_data.txt"; then
