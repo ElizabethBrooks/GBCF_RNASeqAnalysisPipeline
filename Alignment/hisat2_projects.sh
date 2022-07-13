@@ -43,7 +43,7 @@ cd $anOut
 #Name output file of inputs
 inputOutFile="summary.txt"
 #Add software versions to outputs
-hisat2 -version > $inputOutFile
+hisat2 --version > $inputOutFile
 samtools --version >> $inputOutFile
 
 #Set trimmed reads absolute path
@@ -54,8 +54,7 @@ buildOut="build"
 mkdir $buildOut
 #Trim path and file extension from build file
 refNoPath=$(basename $ref)
-refNoEx=$(echo $refNoPath | sed 's/\.fasta/\.fa/')
-refNoEx=$(echo $refNoEx | sed 's/\.fa//')
+refNoEx=$(echo $refNoPath | sed 's/\.fasta//' | sed 's/\.fa//')
 #Copy genome build fasta file to hisat2 build folder
 cp "$ref" "$buildOut"/"$refNoEx"
 #Trim file extension
