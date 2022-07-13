@@ -29,7 +29,7 @@ mkdir $outputsPath
 
 #Make a new directory for analysis
 trimOut=$outputsPath"/trimmed"
-mkdir $qcOut
+mkdir $trimOut
 #Check if the folder already exists
 if [ $? -ne 0 ]; then
 	echo "The $trimOut directory already exsists... please remove before proceeding."
