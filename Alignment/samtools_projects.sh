@@ -45,7 +45,7 @@ inputsPath=$outputsPath"/aligned"
 outputsPath="$inputsPath"
 
 #Make an outputs directory for analysis
-anOut=$outputsPath"/sorted"
+anOut=$inputsPath"/sorted"
 mkdir $anOut
 #Check if the folder already exists
 if [ $? -ne 0 ]; then
