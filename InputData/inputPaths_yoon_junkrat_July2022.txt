@@ -1,5 +1,5 @@
 pairedReads: /afs/crc.nd.edu/group/genomics/R2D2/220707_Yoon_Jurkat_Pool1_RNAseq
 adapter: /afs/crc.nd.edu/x86_64_linux/bio/Trimmomatic/0.32/adapters/TruSeq3-PE.fa:2:30:10
-genomeReference: 
-genomeFeatures: 
+genomeReference: /scratch365/ebrooks5/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq/Homo_sapiens.GRCh38.dna_rm.primary_assembly.fa
+genomeFeatures: /scratch365/ebrooks5/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq/Homo_sapiens.GRCh38.107.gff3
 outputs: /scratch365/ebrooks5/yoon_July2022
