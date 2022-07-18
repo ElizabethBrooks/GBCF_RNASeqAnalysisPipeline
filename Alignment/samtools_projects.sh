@@ -41,11 +41,9 @@ outputsPath=$outputsPath"/"$projectDir
 
 #Retrieve aligned reads input absolute path
 inputsPath=$outputsPath"/aligned"
-#Retrieve sorting outputs absolute path
-outputsPath="$inputsPath"
 
 #Make an outputs directory for analysis
-anOut=$inputsPath"/sorted"
+anOut=$outputsPath"/sorted"
 mkdir $anOut
 #Check if the folder already exists
 if [ $? -ne 0 ]; then
