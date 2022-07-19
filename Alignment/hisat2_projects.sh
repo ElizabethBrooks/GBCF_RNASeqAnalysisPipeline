@@ -75,16 +75,16 @@ for f1 in "$trimmedFolder"/*pForward.fq.gz; do
 	#Print status message
 	echo "Processing $curSampleNoPath"
 	#Run hisat2 with default settings
-	hisat2 -p 8 -q -x "$buildOut"/"$refNoEx" -1 "$f1" -2 "$curSample"_pReverse.fq.gz -S "$curSampleNoPath"/accepted_hits.sam --summary-file "$curSampleNoPath"/alignedSummary.txt
+	hisat2 -p 8 -q -x $buildOut"/"$refNoEx -1 $f1 -2 $curSample"_pReverse.fq.gz" -S $curSampleNoPath"/accepted_hits.sam" --summary-file $curSampleNoPath"/alignedSummary.txt"
 	#Add sample and hisat2 run inputs to output summary file
 	echo $curSampleNoPath >> $inputOutFile
-	echo "hisat2 -p 8 -q -x" "$buildOut"/"$refNoEx" -1 "$f1" -2 "$curSample"_pReverse.fq.gz -S "$curSampleNoPath"/accepted_hits.sam --summary-file "$curSampleNoPath"/alignedSummary.txt >> "$inputOutFile"
+	echo "hisat2 -p 8 -q -x "$buildOut"/"$refNoEx" -1 "$f1" -2 "$curSample"_pReverse.fq.gz -S "$curSampleNoPath"/accepted_hits.sam --summary-file "$curSampleNoPath"/alignedSummary.txt" >> "$inputOutFile"
 	#Convert output sam files to bam format for downstream analysis
-	samtools view -@ 8 -bS "$curSampleNoPath"/accepted_hits.sam > "$curSampleNoPath"/accepted_hits.bam
+	samtools view -@ 8 -bS $curSampleNoPath"/accepted_hits.sam" > $curSampleNoPath"/accepted_hits.bam"
 	#Remove the now converted .sam file
-	rm "$curSampleNoPath"/accepted_hits.sam
+	rm $curSampleNoPath"/accepted_hits.sam"
 	#Add samtools run inputs to output summary file
-	echo samtools view -@ 8 -bS "$curSampleNoPath"/accepted_hits.sam ">" "$curSampleNoPath"/accepted_hits.bam >> "$inputOutFile"
+	echo "samtools view -@ 8 -bS "$curSampleNoPath"/accepted_hits.sam > "$curSampleNoPath"/accepted_hits.bam" >> $inputOutFile
 	#Print status message
 	echo "Processed!"
 done

@@ -44,21 +44,22 @@ inputOutFile="summary.txt"
 htseq-count --help | tail -1 > $inputOutFile
 
 #Loop through all sorted forward and reverse paired reads and store the file locations in an array
-for f1 in "$inputsPath"/*/*.bam; do
-	#Name of sorted and aligned file
-	curAlignedSample="$f1"
-	#Trim file paths from current sample folder name
-	curSampleNoPath=$(echo $f1 | sed 's/accepted\_hits\.bam//g')
-	curSampleNoPath=$(basename $curSampleNoPath)
+for f1 in "$inputsPath"/*/; do
+	#Name of aligned file
+	curAlignedSample=$f1"accepted_hits.bam"
+	#Trim file path from current folder name
+	curSampleNoPath=$(basename $f1)
 	#Create directory for current sample outputs
-	mkdir "$curSampleNoPath"
+	mkdir $curSampleNoPath
+	#Output current sample name to summary file
+	echo $curSampleNoPath >> $inputOutFile
 	#Output status message
 	echo "Sample $curSampleNoPath is being counted..."
 	#Count reads using htseq-count
-	htseq-count -f bam -s no -t gene "$curAlignedSample" "$genomeFile" > "$curSampleNoPath"/counts.txt
+	htseq-count -f bam -s no -t gene $curAlignedSample $genomeFile > $curSampleNoPath"/counts.txt"
 	#Add run inputs to output summary file
 	echo "$curSampleNoPath" >> "$inputOutFile"
-	echo "htseq-count -f bam -s no -t gene" "$curAlignedSample" "$genomeFile" ">" "$curSampleNoPath"/counts.txt >> "$inputOutFile"
+	echo "htseq-count -f bam -s no -t gene "$curAlignedSample" "$genomeFile" > "$curSampleNoPath"/counts.txt" >> $inputOutFile
 	#Output status message
 	echo "Sample $curSampleNoPath has been counted!"
 done
