@@ -88,5 +88,9 @@ for f1 in "$trimmedFolder"/*pForward.fq.gz; do
 	#Print status message
 	echo "Processed!"
 done
+
+#Clean up
+rm -r "build"
+
 #Print status message
 echo "Analysis complete!"
