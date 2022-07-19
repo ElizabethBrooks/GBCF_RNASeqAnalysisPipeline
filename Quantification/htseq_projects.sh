@@ -55,10 +55,10 @@ for f1 in "$inputsPath"/*/*.bam; do
 	#Output status message
 	echo "Sample $curSampleNoPath is being counted..."
 	#Count reads using htseq-count
-	htseq-count -s no -t gene "$curAlignedSample" "$genomeFile" > "$curSampleNoPath"/counts.txt
+	htseq-count -f bam -s no -t gene "$curAlignedSample" "$genomeFile" > "$curSampleNoPath"/counts.txt
 	#Add run inputs to output summary file
 	echo "$curSampleNoPath" >> "$inputOutFile"
-	echo "htseq-count -s no -t gene" "$curAlignedSample" "$genomeFile" ">" "$curSampleNoPath"/counts.txt >> "$inputOutFile"
+	echo "htseq-count -f bam -s no -t gene" "$curAlignedSample" "$genomeFile" ">" "$curSampleNoPath"/counts.txt >> "$inputOutFile"
 	#Output status message
 	echo "Sample $curSampleNoPath has been counted!"
 done
