@@ -1,8 +1,8 @@
 #!/bin/bash
 #Script to generate guide file and merge gene counts using the merge_tables.py script
 #Usage: bash generateMergedTable_projects.sh inputsFile
-#Usage ex: bash generateMergedTable_projects.sh inputPaths_yoon_adipocyte_July2022.txt
-#Usage ex: bash generateMergedTable_projects.sh inputPaths_yoon_junkrat_July2022.txt
+#Usage ex: bash generateMergedTable_projects.sh 220705_Yoon_Adipocyte_Pool2_RNAseq_merged_counts.txt
+#Usage ex: bash generateMergedTable_projects.sh 220707_Yoon_Jurkat_Pool1_RNAseq_merged_counts.txt
 
 #Load necessary modules for ND CRC servers
 module load bio
