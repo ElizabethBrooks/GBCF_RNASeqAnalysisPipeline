@@ -46,12 +46,14 @@ cd $qcOut
 
 #Loop through all forward and reverse reads and run trimmomatic on each pair
 for f1 in "$readPath"/*_R1_001.fastq.gz; do
+	#Trim path from file name
+	noPath=$(basename $f1 | sed 's/_R._001\.fastq\.gz//')
 	#Trim extension from current file name
 	curSample=$(echo $f1 | sed 's/_R._001\.fastq\.gz//')
 	#Set paired file name
 	f2=$curSample"_R2_001.fastq.gz"
 	#Print status message
-	echo "Processing $curSample"
+	echo "Processing $noPath"
 	#Perform QC on both paired end reads for the current sample
 	fastqc $f1 -o $qcOut --extract
 	fastqc $f2 -o $qcOut --extract
@@ -59,10 +61,10 @@ for f1 in "$readPath"/*_R1_001.fastq.gz; do
 	echo "fastqc $f1 -o $qcOut --extract" >> $inputOutFile
 	echo "fastqc $f2 -o $qcOut --extract" >> $inputOutFile
 	#Clean up
-	rm -r $curSample"_R1_001_fastqc.zip"
-	rm -r $curSample"_R1_001_fastqc/"
-	rm -r $curSample"_R2_001_fastqc.zip"
-	rm -r $curSample"_R2_001_fastqc/"
+	rm -r $noPath"_R1_001_fastqc.zip"
+	rm -r $noPath"_R1_001_fastqc/"
+	rm -r $noPath"_R2_001_fastqc.zip"
+	rm -r $noPath"_R2_001_fastqc/"
 	#Print status message
 	echo "Processed!"
 done
