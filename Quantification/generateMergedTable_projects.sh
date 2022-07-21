@@ -33,7 +33,7 @@ tmpGuide=$inputsPath"/tmp_guideFile.txt"
 #Loop through all counted paired reads and create a guide file
 for f1 in "$inputsPath"/*/; do
 	currTag=$(echo $f1 | sed 's/.$//')
-	echo "'$f1'counts.txt $currTag" >> $tmpGuide
+	echo $f1"counts.txt $currTag" >> $tmpGuide
 done
 
 #Move to location of merge_tagles.py script
