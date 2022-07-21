@@ -43,8 +43,10 @@ cd ../util
 python merge_tables.py $tmpGuide
 echo "python merge_tables.py $tmpGuide" >> $inputOutFile
 
-#Move the output merged counts file
-mv merged_counts.txt $inputsPath
+#Remove file paths from sample tags
+path=$(echo $inputsPath | sed "s/\///g") 
+cat merged_counts.txt | sed 's/\///g' | sed "s/$path//g" > $inputsPath"/"$projectDir"_merged_counts.txt"
 
 #Clean up
 rm $tmpGuide
+rm merged_counts.txt
