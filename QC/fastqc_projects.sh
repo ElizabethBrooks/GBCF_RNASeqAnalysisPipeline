@@ -60,11 +60,6 @@ for f1 in "$readPath"/*_R1_001.fastq.gz; do
 	#Output run inputs
 	echo "fastqc $f1 -o $qcOut --extract" >> $inputOutFile
 	echo "fastqc $f2 -o $qcOut --extract" >> $inputOutFile
-	#Clean up
-	rm -r $noPath"_R1_001_fastqc.zip"
-	rm -r $noPath"_R1_001_fastqc/"
-	rm -r $noPath"_R2_001_fastqc.zip"
-	rm -r $noPath"_R2_001_fastqc/"
 	#Print status message
 	echo "Processed!"
 done

@@ -70,6 +70,11 @@ for f1 in "$readPath"/*_R1_001.fastq.gz; do
 	trimmomatic PE -threads 8 -phred"$score" $f1 $f2 $sampleTag"_pForward.fq.gz" $sampleTag"_uForward.fq.gz" $sampleTag"_pReverse.fq.gz" $sampleTag"_uReverse.fq.gz" ILLUMINACLIP:"$adapterPath" LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
 	#Add run inputs to output summary file
 	echo trimmomatic PE -threads 8 -phred"$score" $f1 $f2 $sampleTag"_pForward.fq.gz" $sampleTag"_uForward.fq.gz" $sampleTag"_pReverse.fq.gz" $sampleTag"_uReverse.fq.gz" ILLUMINACLIP:"$adapterPath" LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36 >> $inputOutFile
+	#Clean up
+	rm -r $noPath"_R1_001_fastqc.zip"
+	rm -r $noPath"_R1_001_fastqc/"
+	rm -r $noPath"_R2_001_fastqc.zip"
+	rm -r $noPath"_R2_001_fastqc/"
 	#Print status message
 	echo "Processed!"
 done
