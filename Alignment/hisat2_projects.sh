@@ -38,13 +38,14 @@ fi
 cd $anOut
 
 #Name output file of inputs
-inputOutFile="summary.txt"
+inputOutFile=$outputsPath"/pipeline_summary.txt"
+versionFile=$outputsPath"/version_summary.txt"
 #Add software versions to outputs
-hisat2 --version > $inputOutFile
-samtools --version >> $inputOutFile
+hisat2 --version >> $versionFile
+samtools --version >> $versionFile
 
 #Set trimmed reads absolute path
-trimmedFolder=$outputsPath"/trimmed"
+inputsPath=$outputsPath"/trimmed"
 
 #Create build output directory for Hisat reference
 buildOut="build"
@@ -64,7 +65,7 @@ echo "hisat2 build complete!"
 
 #Loop through all forward and reverse paired reads and run Hisat2 on each pair
 # using 8 threads and samtools to convert output sam files to bam
-for f1 in "$trimmedFolder"/*pForward.fq.gz; do
+for f1 in "$inputsPath"/*pForward.fq.gz; do
 	#Trim extension from current file name
 	curSample=$(echo $f1 | sed 's/.pForward\.fq\.gz//')
 	#Trim file path from current file name
@@ -91,6 +92,7 @@ done
 
 #Clean up
 rm -r "build"
+rm -r $inputsPath
 
 #Print status message
 echo "Analysis complete!"

@@ -39,9 +39,10 @@ fi
 cd $trimOut
 
 #Name output file of inputs
-inputOutFile="summary.txt"
+inputOutFile=$outputsPath"/pipeline_summary.txt"
+versionFile=$outputsPath"/version_summary.txt"
 #Add software version to outputs
-trimmomatic -version > $inputOutFile
+trimmomatic -version >> $versionFile
 
 #Loop through all forward and reverse reads and run trimmomatic on each pair
 for f1 in "$readPath"/*_R1_001.fastq.gz; do
@@ -73,5 +74,6 @@ for f1 in "$readPath"/*_R1_001.fastq.gz; do
 	#Print status message
 	echo "Processed!"
 done
+
 #Print status message
 echo "Analysis complete!"

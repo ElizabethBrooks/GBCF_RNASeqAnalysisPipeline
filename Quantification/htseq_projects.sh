@@ -39,9 +39,10 @@ fi
 cd $anOut
 
 #Name output file of inputs
-inputOutFile="summary.txt"
+inputOutFile=$outputsPath"/pipeline_summary.txt"
+versionFile=$outputsPath"/version_summary.txt"
 #Add software versions to outputs
-htseq-count --help | tail -1 > $inputOutFile
+htseq-count --help | tail -1 >> $versionFile
 
 #Loop through all sorted forward and reverse paired reads and store the file locations in an array
 for f1 in "$inputsPath"/*/; do
@@ -63,3 +64,10 @@ for f1 in "$inputsPath"/*/; do
 	#Output status message
 	echo "Sample $curSampleNoPath has been counted!"
 done
+
+#Clean up
+rm -r $inputsPath
+
+#Print status message
+echo "Analysis complete!"
+

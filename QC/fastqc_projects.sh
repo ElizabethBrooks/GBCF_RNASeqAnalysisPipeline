@@ -27,6 +27,12 @@ projectDir=$(basename $readPath)
 outputsPath=$outputsPath"/"$projectDir
 mkdir $outputsPath
 
+#Name output file of inputs
+inputOutFile=$outputsPath"/pipeline_summary.txt"
+versionFile=$outputsPath"/version_summary.txt"
+#Report software version
+fastqc -version > $versionFile
+
 #Make a new directory for analysis
 qcOut=$outputsPath"/qc"
 mkdir $qcOut
@@ -38,8 +44,6 @@ fi
 #Move to the new directory
 cd $qcOut
 
-#Report software version
-fastqc -version > "summary.txt"
 #Loop through all forward and reverse reads and run trimmomatic on each pair
 for f1 in "$readPath"/*_R1_001.fastq.gz; do
 	#Trim extension from current file name
@@ -51,22 +55,15 @@ for f1 in "$readPath"/*_R1_001.fastq.gz; do
 	#Perform QC on both paired end reads for the current sample
 	fastqc $f1 -o $qcOut --extract
 	fastqc $f2 -o $qcOut --extract
-	#Quickly check the QC results of the first pair
-	if grep -iF "WARN" $curSample"_R1_001_fastqc/summary.txt"; then
-		grep -iF "WARN" $curSample"_R1_001_fastqc/summary.txt" > $curSample"_R1_001_fastqc_report.txt"
-	fi
-	if grep -iF "FAIL" $curSample"_R1_001_fastqc/summary.txt"; then
-		grep -iF "FAIL" $curSample"_R1_001_fastqc/summary.txt" > $curSample"_R1_001_fastqc_report.txt"
-	fi
-	#Quickly check the QC results of the second pair
-	if grep -iF "WARN" $curSample"_R2_001_fastqc/summary.txt"; then
-		grep -iF "WARN" $curSample"_R2_001_fastqc/summary.txt" > $curSample"_R2_001_fastqc_report.txt"
-	fi
-	if grep -iF "FAIL" $curSample"_R2_001_fastqc/summary.txt"; then
-		grep -iF "FAIL" $curSample"_R2_001_fastqc/summary.txt" > $curSample"_R2_001_fastqc_report.txt"
-	fi
+	#Output run inputs
+	echo "fastqc $f1 -o $qcOut --extract" >> $inputOutFile
+	echo "fastqc $f2 -o $qcOut --extract" >> $inputOutFile
+	#Clean up
+	rm "$curSample"*fastqc.zip
+	rm "$curSample"*fastqc/
 	#Print status message
 	echo "Processed!"
 done
+
 #Print status message
 echo "Analysis complete!"

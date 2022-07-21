@@ -39,9 +39,10 @@ fi
 cd $anOut
 
 #Name output file of inputs
-inputOutFile="summary.txt"
+inputOutFile=$outputsPath"/pipeline_summary.txt"
+versionFile=$outputsPath"/version_summary.txt"
 #Add software versions to outputs
-samtools --version > $inputOutFile
+samtools --version >> $versionFile
 
 #Loop through all reads and sort sam/bam files for input to samtools
 for f1 in "$inputsPath"/*/; do
@@ -71,3 +72,8 @@ for f1 in "$inputsPath"/*/; do
 	echo "Sample $curSampleNoPath has been name sorted!"
 done
 
+#Clean up
+rm -r $inputsPath
+
+#Print status message
+echo "Analysis complete!"
