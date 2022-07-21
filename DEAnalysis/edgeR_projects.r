@@ -1,8 +1,8 @@
 #!/usr/bin/env Rscript
 #R script to perform statistical analysis of gene count tables using edgeR exact test
 #Usage: Rscript edgeR_projects.r mergedCountsFile
-#Usage Ex: Rscript edgeR_projects.r 220705_Yoon_Adipocyte_Pool2_RNAseq_merged_counts.txt
-#Usage Ex: Rscript edgeR_projects.r 220707_Yoon_Jurkat_Pool1_RNAseq_merged_counts.txt
+#Usage Ex: Rscript edgeR_projects.r 220705_Yoon_Adipocyte_Pool2_RNAseq_merged_counts_formatted.txt
+#Usage Ex: Rscript edgeR_projects.r 220707_Yoon_Jurkat_Pool1_RNAseq_merged_counts_formatted.txt
 
 #Install edgeR, this should only need to be done once
 #if (!requireNamespace("BiocManager", quietly = TRUE))
@@ -13,13 +13,27 @@
 library("edgeR")
 
 #Set working directory
-setwd("/Users/bamflappy/GBCF/yoon_July2022")
+#setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq")
+setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq/subset")
+#setwd("/Users/bamflappy/GBCF/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq")
 
 #Import gene count data
-countsTable <- read.csv(file=args[1], row.names="gene")
-head(countsTable)
+#inputTable <- read.csv(file=args[1], header = TRUE, sep = "\t", row.names="gene")
+#inputTable <- read.table(file="220705_Yoon_Adipocyte_Pool2_RNAseq_merged_counts_formatted.txt", header = TRUE, sep = "\t", row.names="gene")
+inputTable <- read.table(file="220705_Yoon_Adipocyte_Pool2_RNAseq_merged_counts_formatted.txt", header = TRUE, sep = "\t", row.names="gene")[,1:12]
+#inputTable <- read.table(file="220707_Yoon_Jurkat_Pool1_RNAseq_merged_counts_formatted.txt", header = TRUE, sep = "\t", row.names="gene")
+
+#Trim the data table
+countsTable <- head(inputTable, - 5)
+
+#Set number of samples
+#numSamples <- 13
+numSamples <- 12
+
 #Add grouping factor
-group <- factor(c(rep("100mV",4), rep("180mV",4), rep("CTL",4), "Undetermined"))
+#group <- factor(c(rep("100mV",4), rep("180mV",4), rep("CTL",4), "Undetermined"))
+group <- factor(c(rep("100mV",4), rep("180mV",4), rep("CTL",4)))
+
 #Create DGE list object
 list <- DGEList(counts=countsTable,group=group)
 
@@ -28,12 +42,12 @@ list <- DGEList(counts=countsTable,group=group)
 
 #Plot the library sizes before normalization
 jpeg("exactTest_plotBarsBefore.jpg")
-barplot(list$samples$lib.size*1e-6, names=1:6, ylab="Library size (millions)")
+barplot(list$samples$lib.size*1e-6, names=1:numSamples, ylab="Library size (millions)")
 dev.off()
 #Draw a MDS plot to show the relative similarities of the samples
 # and to view batch and treatment effects before normalization
 jpeg("exactTest_plotMDSBefore.jpg")
-plotMDS(list, col=rep(1:3, each=3))
+plotMDS(list, col=rep(1:3, each=4))
 dev.off()
 #Draw a heatmap of individual RNA-seq samples using moderated 
 # log-counts-per-million before normalization
@@ -58,12 +72,12 @@ dim(list)
 
 #Plot the library sizes after normalization
 jpeg("exactTest_plotBarsAfter.jpg")
-barplot(list$samples$lib.size*1e-6, names=1:6, ylab="Library size (millions)")
+barplot(list$samples$lib.size*1e-6, names=1:numSamples, ylab="Library size (millions)")
 dev.off()
 #Draw a MDS plot to show the relative similarities of the samples
 # and to view batch and treatment effects after normalization
 jpeg("exactTest_plotMDSAfter.jpg")
-plotMDS(list, col=rep(1:3, each=3))
+plotMDS(list, col=rep(1:3, each=4))
 dev.off()
 #Draw a heatmap of individual RNA-seq samples using moderated
 # log-counts-per-million after normalization

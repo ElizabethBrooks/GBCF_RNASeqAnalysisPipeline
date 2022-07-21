@@ -47,6 +47,9 @@ echo "python merge_tables.py $tmpGuide" >> $inputOutFile
 path=$(echo $inputsPath | sed "s/\///g") 
 cat merged_counts.txt | sed 's/\///g' | sed "s/$path//g" > $inputsPath"/"$projectDir"_merged_counts.txt"
 
+#Clean up sample names
+cat $inputsPath"/"$projectDir"_merged_counts.txt" | sed "s/\-/\_/g" | sed "s/3T3/threeT3/g" > $inputsPath"/"$projectDir"_merged_counts_formatted.txt"
+
 #Clean up
 rm $tmpGuide
 rm merged_counts.txt
