@@ -27,21 +27,24 @@ inputsPath=$outputsPath"/counted"
 #Name output file of inputs
 inputOutFile="pipeline_summary.txt"
 
+#Name tmp guide file for merging
+tmpGuide=$inputsPath"/tmp_guideFile.txt"
+
 #Loop through all counted paired reads and create a guide file
 for f1 in "$inputsPath"/*/; do
 	currTag=$(echo $f1 | sed 's/.$//')
-	echo "'$f1'counts.txt $currTag" > "tmp_guideFile.txt"
+	echo "'$f1'counts.txt $currTag" >> $tmpGuide
 done
 
 #Move to location of merge_tagles.py script
 cd ../util
 
 #Merge gene counts based on generated guide file
-python merge_tables.py tmp_guideFile.txt
-echo "python merge_tables.py tmp_guideFile.txt" >> $inputOutFile
+python merge_tables.py $tmpGuide
+echo "python merge_tables.py $tmpGuide" >> $inputOutFile
 
 #Move the output merged counts file
 mv merged_counts.txt $inputsPath
 
 #Clean up
-rm "$outputsPath"/tmp_guideFile.txt
+rm $tmpGuide
