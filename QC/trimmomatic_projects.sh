@@ -41,7 +41,9 @@ cd $trimOut
 #Name output file of inputs
 inputOutFile=$outputsPath"/pipeline_summary.txt"
 versionFile=$outputsPath"/version_summary.txt"
+
 #Add software version to outputs
+echo "Trimmomatic:" >> $versionFile
 trimmomatic -version >> $versionFile
 
 #Loop through all forward and reverse reads and run trimmomatic on each pair
