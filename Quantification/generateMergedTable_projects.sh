@@ -48,7 +48,9 @@ path=$(echo $inputsPath | sed "s/\///g")
 cat merged_counts.txt | sed 's/\///g' | sed "s/$path//g" > $inputsPath"/"$projectDir"_merged_counts.txt"
 
 #Clean up sample names
-cat $inputsPath"/"$projectDir"_merged_counts.txt" | sed "s/\-/\_/g" | sed "s/3T3/threeT3/g" > $inputsPath"/"$projectDir"_merged_counts_formatted.txt"
+header=$(head -1 $inputsPath"/"$projectDir"_merged_counts.txt" | tr '\t' '\n' | sed "s/\-/\_/g" | sed "s/Jurkat.*\_S/S/g" | sed "s/3T3.*\_S/S/g" | sed "s/Jurkat.*\_S/S/g" | sed "s/Undetermined\_//g" | tr '\n' '\t')
+echo $header > $inputsPath"/"$projectDir"_merged_counts_formatted.txt"
+tail -n +2 $inputsPath"/"$projectDir"_merged_counts.txt" >> $inputsPath"/"$projectDir"_merged_counts_formatted.txt"
 
 #Clean up
 rm $tmpGuide

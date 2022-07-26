@@ -14,40 +14,28 @@ library(edgeR)
 library(ggplot2)
 
 #Set working directory
-#setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq/gene_counts")
-setwd("/Users/bamflappy/GBCF/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq/gene_counts")
+#setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq")
+#setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq/subset")
+setwd("/Users/bamflappy/GBCF/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq")
+#setwd("/Users/bamflappy/GBCF/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq/subset")
 
 #Import gene count data
 #inputTable <- read.csv(file=args[1], header = TRUE, sep = "\t", row.names="gene")
-#Full set
 #inputTable <- read.table(file="220705_Yoon_Adipocyte_Pool2_RNAseq_merged_counts_formatted.txt", header = TRUE, sep = "\t", row.names="gene")
+#inputTable <- read.table(file="220705_Yoon_Adipocyte_Pool2_RNAseq_merged_counts_formatted.txt", header = TRUE, sep = "\t", row.names="gene")[,1:12]
 inputTable <- read.table(file="220707_Yoon_Jurkat_Pool1_RNAseq_merged_counts_formatted.txt", header = TRUE, sep = "\t", row.names="gene")
-
-#Set working directory
-#No undetermined
-#setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq/subset_noUndetermined")
-#setwd("/Users/bamflappy/GBCF/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq/subset_noUndetermined")
-#DE
-#setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq/differential_expression")
-setwd("/Users/bamflappy/GBCF/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq/differential_expression")
-
-#Seubset the input counts
-#Adipocyte
-#subsetTable <- inputTable[ , -which(names(inputTable) %in% c("S0", "S1", "S6", "S10"))]
-#Jurkat
-subsetTable <- inputTable[ , -which(names(inputTable) %in% c("S0", "S4", "S7", "S9"))]
+#inputTable <- read.table(file="220707_Yoon_Jurkat_Pool1_RNAseq_merged_counts_formatted.txt", header = TRUE, sep = "\t", row.names="gene")[,1:12]
 
 #Trim the data table
-#countsTable <- head(inputTable, - 5)
-countsTable <- head(subsetTable, - 5)
+countsTable <- head(inputTable, - 5)
 
 #Set number of samples
-#numSamples <- 13
-numSamples <- 9
+numSamples <- 13
+#numSamples <- 12
 
 #Add grouping factor
-#group <- factor(c(rep("100mV",4), rep("180mV",4), rep("CTL",4), "Undetermined"))
-group <- factor(c(rep("100mV",3), rep("180mV",3), rep("CTL",3)))
+group <- factor(c(rep("100mV",4), rep("180mV",4), rep("CTL",4), "Undetermined"))
+#group <- factor(c(rep("100mV",4), rep("180mV",4), rep("CTL",4)))
 
 #Create DGE list object
 list <- DGEList(counts=countsTable,group=group)
@@ -67,7 +55,7 @@ ggplot(data = libraries, aes(x = samples, y = sizes)) +
   labs(x = "Sample", y="Library size (millions)")
 dev.off()
 
-#There is no purpose in analyzing genes that are not expressed in either 
+#There is no purpose in analysing genes that are not expressed in either 
 # experimental condition, so genes are first filtered on expression levels
 keep <- filterByExpr(list)
 list <- list[keep, , keep.lib.sizes=FALSE]
@@ -80,7 +68,7 @@ write.table(normList, file="normalized_counts.csv", sep=",", row.names=TRUE)
 #Draw a MDS plot to show the relative similarities of the samples
 # and to view batch and treatment effects after normalization
 jpeg("plotMDS_afterNormalize.jpg")
-plotMDS(list, col=rep(1:3, each=3))
+plotMDS(list, col=rep(1:3, each=4))
 dev.off()
 #Draw a heatmap of individual RNA-seq samples using moderated
 # log-counts-per-million after normalization
@@ -92,6 +80,7 @@ dev.off()
 #Produce a matrix of pseudo-counts
 #Estimate common dispersion and tagwise dispersions
 list <- estimateDisp(list)
+list$common.dispersion
 #View dispersion estimates and biological coefficient of variation
 jpeg("plotBCV.jpg")
 plotBCV(list)
@@ -101,73 +90,73 @@ dev.off()
 #DEA Stage
 
 #Setup color vector for plotting
-color_subset <- c("#0000FF", "#000000", "#FF0000")
+zis_subset <- c("#0000FF", "#000000", "#FF0000")
 
 #Perform an exact test for 100mV vs CTL
 tested <- exactTest(list, pair=c("CTL", "100mV"))
 #Create results table of DE genes
 resultsTbl <- topTags(tested, n=nrow(tested$table))$table
-write.table(resultsTbl, file="100mV_CTL_topTags.csv", sep=",", row.names=TRUE)
+write.table(resultsTbl, file="100mV_CTL.csv", sep=",", row.names=TRUE)
 #Plot log-fold change against log-counts per million, with DE genes highlighted
 #The blue lines indicate 2-fold changes
 jpeg("100mV_CTL_plotMD.jpg")
 plotMD(tested)
-abline(h=c(-1, 1), col="grey")
+abline(h=c(-1, 1), col="blue")
 dev.off()
 #Identify significantly DE genes
-resultsTbl$sigDE <- "NA"
-resultsTbl$sigDE[resultsTbl$logFC > 1 & resultsTbl$FDR < 0.05] <- "UP"
-resultsTbl$sigDE[resultsTbl$logFC < -1 & resultsTbl$FDR < 0.05] <- "DOWN"
+resultsTbl$topDE <- "NA"
+resultsTbl$topDE[resultsTbl$logFC > 1 & resultsTbl$FDR < 0.05] <- "UP"
+resultsTbl$topDE[resultsTbl$logFC < -1 & resultsTbl$FDR < 0.05] <- "DOWN"
 #Create volcano plot
 jpeg("100mV_CTL_plotVolcano.jpg")
-ggplot(data=resultsTbl, aes(x=logFC, y=-log10(FDR), color = sigDE)) + 
+ggplot(data=resultsTbl, aes(x=logFC, y=-log10(FDR), color = topDE)) + 
   geom_point() +
   theme_minimal() +
-  scale_colour_discrete(type = color_subset)
+  scale_colour_discrete(type = zis_subset)
 dev.off()
 
 #Perform an exact test for 180mV vs CTL
 tested <- exactTest(list, pair=c("CTL", "180mV"))
 #Create results table of DE genes
 resultsTbl <- topTags(tested, n=nrow(tested$table))$table
-write.table(resultsTbl, file="180mV_CTL_topTags.csv", sep=",", row.names=TRUE)
+write.table(resultsTbl, file="180mV_CTL.csv", sep=",", row.names=TRUE)
 #Plot log-fold change against log-counts per million, with DE genes highlighted
 #The blue lines indicate 2-fold changes
 jpeg("180mV_CTL_plotMD.jpg")
 plotMD(tested)
-abline(h=c(-1, 1), col="grey")
+abline(h=c(-1, 1), col="blue")
 dev.off()
 #Identify significantly DE genes
-resultsTbl$sigDE <- "NA"
-resultsTbl$sigDE[resultsTbl$logFC > 1 & resultsTbl$FDR < 0.05] <- "UP"
-resultsTbl$sigDE[resultsTbl$logFC < -1 & resultsTbl$FDR < 0.05] <- "DOWN"
+resultsTbl$topDE <- "NA"
+resultsTbl$topDE[resultsTbl$logFC > 1 & resultsTbl$FDR < 0.05] <- "UP"
+resultsTbl$topDE[resultsTbl$logFC < -1 & resultsTbl$FDR < 0.05] <- "DOWN"
 #Create volcano plot
 jpeg("180mV_CTL_plotVolcano.jpg")
-ggplot(data=resultsTbl, aes(x=logFC, y=-log10(FDR), color = sigDE)) + 
+ggplot(data=resultsTbl, aes(x=logFC, y=-log10(FDR), color = topDE)) + 
   geom_point() +
   theme_minimal() +
-  scale_colour_discrete(type = color_subset)
+  scale_colour_discrete(type = zis_subset)
 dev.off()
 
 #Perform an exact test for 180mV vs 100mV
 tested <- exactTest(list, pair=c("100mV", "180mV"))
 #Create results table of DE genes
 resultsTbl <- topTags(tested, n=nrow(tested$table))$table
-write.table(resultsTbl, file="180mV_100mV_topTags.csv", sep=",", row.names=TRUE)
+write.table(resultsTbl, file="180mV_100mV.csv", sep=",", row.names=TRUE)
 #Plot log-fold change against log-counts per million, with DE genes highlighted
 #The blue lines indicate 2-fold changes
 jpeg("180mV_100mV_plotMD.jpg")
 plotMD(tested)
-abline(h=c(-1, 1), col="grey")
+abline(h=c(-1, 1), col="blue")
 dev.off()
 #Identify significantly DE genes
-resultsTbl$sigDE <- "NA"
-resultsTbl$sigDE[resultsTbl$logFC > 1 & resultsTbl$FDR < 0.05] <- "UP"
-resultsTbl$sigDE[resultsTbl$logFC < -1 & resultsTbl$FDR < 0.05] <- "DOWN"
+resultsTbl$topDE <- "NA"
+resultsTbl$topDE[resultsTbl$logFC > 1 & resultsTbl$FDR < 0.05] <- "UP"
+resultsTbl$topDE[resultsTbl$logFC < -1 & resultsTbl$FDR < 0.05] <- "DOWN"
 #Create volcano plot
 jpeg("180mV_100mV_plotVolcano.jpg")
-ggplot(data=resultsTbl, aes(x=logFC, y=-log10(FDR), color = sigDE)) + 
+ggplot(data=resultsTbl, aes(x=logFC, y=-log10(FDR), color = topDE)) + 
   geom_point() +
   theme_minimal() +
-  scale_colour_discrete(type = color_subset)
+  scale_colour_discrete(type = zis_subset)
 dev.off()

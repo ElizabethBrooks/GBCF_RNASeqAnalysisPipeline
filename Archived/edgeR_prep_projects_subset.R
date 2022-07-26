@@ -10,7 +10,8 @@
 #BiocManager::install("edgeR")
 
 #Load the edgeR library
-library("edgeR")
+library(edgeR)
+library(ggplot2)
 
 #Set working directory
 #setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq/subset")
@@ -36,9 +37,16 @@ list <- DGEList(counts=countsTable,group=group)
 
 #Prep Stage
 
+#Retrieve library sizes
+libraries <- data.frame(
+  samples = names(countsTable),
+  sizes = list$samples$lib.size*1e-6)
 #Plot the library sizes before normalization
+#barplot(list$samples$lib.size*1e-6, names=1:numSamples, ylab="Library size (millions)")
 jpeg("plotBars_librarySizes.jpg")
-barplot(list$samples$lib.size*1e-6, names=1:numSamples, ylab="Library size (millions)")
+ggplot(data = libraries, aes(x = samples, y = sizes)) + 
+  geom_bar(stat="identity") +
+  labs(x = "Sample", y="Library size (millions)")
 dev.off()
 #Draw a MDS plot to show the relative similarities of the samples
 # and to view batch and treatment effects before normalization
