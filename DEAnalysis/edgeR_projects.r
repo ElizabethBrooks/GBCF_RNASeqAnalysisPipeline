@@ -14,39 +14,50 @@ library(edgeR)
 library(ggplot2)
 
 #Set working directory
-#setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq/gene_counts")
-setwd("/Users/bamflappy/GBCF/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq/gene_counts")
+setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq/gene_counts")
+#setwd("/Users/bamflappy/GBCF/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq/gene_counts")
 
 #Import gene count data
 #inputTable <- read.csv(file=args[1], header = TRUE, sep = "\t", row.names="gene")
 #Full set
-#inputTable <- read.table(file="220705_Yoon_Adipocyte_Pool2_RNAseq_merged_counts_formatted.txt", header = TRUE, sep = "\t", row.names="gene")
-inputTable <- read.table(file="220707_Yoon_Jurkat_Pool1_RNAseq_merged_counts_formatted.txt", header = TRUE, sep = "\t", row.names="gene")
+inputTable <- read.table(file="220705_Yoon_Adipocyte_Pool2_RNAseq_merged_counts_formatted.txt", header = TRUE, sep = "\t", row.names="gene")
+#inputTable <- read.table(file="220707_Yoon_Jurkat_Pool1_RNAseq_merged_counts_formatted.txt", header = TRUE, sep = "\t", row.names="gene")
 
 #Set working directory
 #No undetermined
 #setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq/subset_noUndetermined")
 #setwd("/Users/bamflappy/GBCF/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq/subset_noUndetermined")
 #DE
-#setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq/differential_expression")
-setwd("/Users/bamflappy/GBCF/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq/differential_expression")
+setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq/differential_expression")
+#setwd("/Users/bamflappy/GBCF/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq/differential_expression")
 
-#Seubset the input counts
-#Adipocyte
-#subsetTable <- inputTable[ , -which(names(inputTable) %in% c("S0", "S1", "S6", "S10"))]
-#Jurkat
-subsetTable <- inputTable[ , -which(names(inputTable) %in% c("S0", "S4", "S7", "S9"))]
+#Subset the input counts
+#Full set
+#subsetTable <- inputTable
+#No undetermined
+#subsetTable <- inputTable[,1:12]
+#DE Adipocyte
+subsetTable <- inputTable[ , -which(names(inputTable) %in% c("S00", "S01", "S06", "S10"))]
+#DE Jurkat
+#subsetTable <- inputTable[ , -which(names(inputTable) %in% c("S00", "S04", "S07", "S09"))]
 
 #Trim the data table
-#countsTable <- head(inputTable, - 5)
 countsTable <- head(subsetTable, - 5)
 
 #Set number of samples
+#Full set
 #numSamples <- 13
+#No undetermined
+#numSamples <- 12
+#DE subset
 numSamples <- 9
 
 #Add grouping factor
+#Full set
 #group <- factor(c(rep("100mV",4), rep("180mV",4), rep("CTL",4), "Undetermined"))
+#No undetermined
+#group <- factor(c(rep("100mV",4), rep("180mV",4), rep("CTL",4)))
+#DE subset
 group <- factor(c(rep("100mV",3), rep("180mV",3), rep("CTL",3)))
 
 #Create DGE list object
@@ -80,6 +91,11 @@ write.table(normList, file="normalized_counts.csv", sep=",", row.names=TRUE)
 #Draw a MDS plot to show the relative similarities of the samples
 # and to view batch and treatment effects after normalization
 jpeg("plotMDS_afterNormalize.jpg")
+#Full set
+#plotMDS(list)
+#No undetermined
+#plotMDS(list, col=rep(1:3, each=4))
+#DE
 plotMDS(list, col=rep(1:3, each=3))
 dev.off()
 #Draw a heatmap of individual RNA-seq samples using moderated
