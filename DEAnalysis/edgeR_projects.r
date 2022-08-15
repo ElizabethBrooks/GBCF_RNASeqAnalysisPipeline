@@ -30,9 +30,12 @@ library(ggplotify)
 
 #Connect to a an ensembl website mart by specifying a BioMart and dataset parameters
 #Mus_musculus.GRCm39
-#ensembl = useEnsembl(biomart="ensembl", dataset="mmusculus_gene_ensembl")
+ensembl = useEnsembl(biomart="ensembl", dataset="mmusculus_gene_ensembl")
 #Homo_sapiens.GRCh38
-ensembl = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
+#ensembl = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
+
+#View available attributes
+#View(listAttributes(ensembl))
 
 #Retrieve gene attributes
 genes_att <- getBM(attributes=c('ensembl_gene_id',
@@ -42,8 +45,8 @@ genes_att <- getBM(attributes=c('ensembl_gene_id',
                    mart = ensembl)
 
 #Retrieve all hallmark gene sets
-#h_gene_sets = msigdbr(species = "mouse", category = "H")
-h_gene_sets = msigdbr(species = "human", category = "H")
+h_gene_sets = msigdbr(species = "mouse", category = "H")
+#h_gene_sets = msigdbr(species = "human", category = "H")
 
 #Retrieve the apoptosis gene set
 h_apoptosis <- h_gene_sets %>%
@@ -62,23 +65,23 @@ h_interferon <- h_gene_sets %>%
   dplyr::filter(gs_name == "HALLMARK_INTERFERON_ALPHA_RESPONSE")
 
 #Set working directory
-#setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq/gene_counts")
-setwd("/Users/bamflappy/GBCF/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq/gene_counts")
+setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq/gene_counts")
+#setwd("/Users/bamflappy/GBCF/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq/gene_counts")
 
 #Import gene count data
 #inputTable <- read.csv(file=args[1], header = TRUE, sep = "\t", row.names="gene")
 #Full set
-#inputTable <- read.table(file="220705_Yoon_Adipocyte_Pool2_RNAseq_merged_counts_formatted.txt", header = TRUE, sep = "\t", row.names="gene")
-inputTable <- read.table(file="220707_Yoon_Jurkat_Pool1_RNAseq_merged_counts_formatted.txt", header = TRUE, sep = "\t", row.names="gene")
+inputTable <- read.table(file="220705_Yoon_Adipocyte_Pool2_RNAseq_merged_counts_formatted.txt", header = TRUE, sep = "\t", row.names="gene")
+#inputTable <- read.table(file="220707_Yoon_Jurkat_Pool1_RNAseq_merged_counts_formatted.txt", header = TRUE, sep = "\t", row.names="gene")
 
 #Set working directory
 #No undetermined
 #setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq/subset_noUndetermined")
 #setwd("/Users/bamflappy/GBCF/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq/subset_noUndetermined")
 #DE Adipocyte
-#setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq/differential_expression")
+setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq/differential_expression")
 #DE Jurkat
-setwd("/Users/bamflappy/GBCF/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq/differential_expression")
+#setwd("/Users/bamflappy/GBCF/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq/differential_expression")
 
 #Subset the input counts
 #Full set
@@ -86,9 +89,9 @@ setwd("/Users/bamflappy/GBCF/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq/diffe
 #No undetermined
 #subsetTable <- inputTable[,1:12]
 #DE Adipocyte
-#subsetTable <- inputTable[ , -which(names(inputTable) %in% c("S00", "S01", "S06", "S10"))]
+subsetTable <- inputTable[ , -which(names(inputTable) %in% c("S00", "S01", "S06", "S10"))]
 #DE Jurkat
-subsetTable <- inputTable[ , -which(names(inputTable) %in% c("S00", "S04", "S07", "S09"))]
+#subsetTable <- inputTable[ , -which(names(inputTable) %in% c("S00", "S04", "S07", "S09"))]
 
 #Trim the data table
 countsTable <- head(subsetTable, - 5)
@@ -150,7 +153,7 @@ dev.off()
 #Draw a heatmap of individual RNA-seq samples using moderated
 # log-counts-per-million after normalization
 logcpm <- cpm(list, log=TRUE)
-jpeg("plotHeatMap_afterNormalize.jpg")
+jpeg("plotHeatMap_cpm_afterNormalize.jpg")
 heatmap(logcpm)
 dev.off()
 
@@ -169,11 +172,11 @@ dev.off()
 color_subset <- c("#0000FF", "#000000", "#FF0000")
 
 #Prepare a gene counts table
-sample_counts <- data.frame(list$counts) %>% rownames_to_column(var="gene")
+sample_counts <- data.frame(logcpm) %>% rownames_to_column(var="gene")
 
 #Create data frame with the experimental design layout
 exp_factor <- data.frame(group)
-rownames(exp_factor) <- colnames(list$counts)
+rownames(exp_factor) <- colnames(logcpm)
 
 #Perform an exact test for 100mV vs CTL
 tested <- exactTest(list, pair=c("CTL", "100mV"))
@@ -231,19 +234,19 @@ resultsTbl_interferon_filt <- head(resultsTbl_interferon_filt, n = 20)
 #Create heatmap for resultsTbl_apoptosis_filt
 as.ggplot(pheatmap(resultsTbl_apoptosis_filt, scale="row", annotation_col = exp_factor,
                    main="100mV vs CTL Apoptosis Response"))
-ggsave("annotated/100mV_CTL_heatmap_apoptosis.png", bg = "white")
+ggsave("annotated/100mV_CTL_heatmap_cpm_apoptosis.png", bg = "white")
 #Create heatmap for resultsTbl_inflammatory_filt
 as.ggplot(pheatmap(resultsTbl_inflammatory_filt, scale="row", annotation_col = exp_factor,
                    main="100mV vs CTL Inflammatory Response"))
-ggsave("annotated/100mV_CTL_heatmap_inflammatory.png", bg = "white")
+ggsave("annotated/100mV_CTL_heatmap_cpm_inflammatory.png", bg = "white")
 #Create heatmap for resultsTbl_tnfa_filt
 as.ggplot(pheatmap(resultsTbl_tnfa_filt, scale="row", annotation_col = exp_factor,
                    main="100mV vs CTL TNF Alpha Response"))
-ggsave("annotated/100mV_CTL_heatmap_tnfa.png", bg = "white")
+ggsave("annotated/100mV_CTL_heatmap_cpm_tnfa.png", bg = "white")
 #Create heatmap for resultsTbl_interferon_filt
 as.ggplot(pheatmap(resultsTbl_interferon_filt, scale="row", annotation_col = exp_factor,
                    main="100mV vs CTL Interferon Alpha Response"))
-ggsave("annotated/100mV_CTL_heatmap_interferon.png", bg = "white")
+ggsave("annotated/100mV_CTL_heatmap_cpm_interferon.png", bg = "white")
 
 #Perform an exact test for 180mV vs CTL
 tested <- exactTest(list, pair=c("CTL", "180mV"))
@@ -301,19 +304,19 @@ resultsTbl_interferon_filt <- head(resultsTbl_interferon_filt, n = 20)
 #Create heatmap for resultsTbl_apoptosis_filt
 as.ggplot(pheatmap(resultsTbl_apoptosis_filt, scale="row", annotation_col = exp_factor,
                    main="180mV vs CTL Apoptosis Response"))
-ggsave("annotated/180mV_CTL_heatmap_apoptosis.png", bg = "white")
+ggsave("annotated/180mV_CTL_heatmap_cpm_apoptosis.png", bg = "white")
 #Create heatmap for resultsTbl_inflammatory_filt
 as.ggplot(pheatmap(resultsTbl_inflammatory_filt, scale="row", annotation_col = exp_factor,
                    main="180mV vs CTL Inflammatory Response"))
-ggsave("annotated/180mV_CTL_heatmap_inflammatory.png", bg = "white")
+ggsave("annotated/180mV_CTL_heatmap_cpm_inflammatory.png", bg = "white")
 #Create heatmap for resultsTbl_tnfa_filt
 as.ggplot(pheatmap(resultsTbl_tnfa_filt, scale="row", annotation_col = exp_factor,
                    main="180mV vs CTL TNF Alpha Response"))
-ggsave("annotated/180mV_CTL_heatmap_tnfa.png", bg = "white")
+ggsave("annotated/180mV_CTL_heatmap_cpm_tnfa.png", bg = "white")
 #Create heatmap for resultsTbl_interferon_filt
 as.ggplot(pheatmap(resultsTbl_interferon_filt, scale="row", annotation_col = exp_factor,
                    main="180mV vs CTL Interferon Alpha Response"))
-ggsave("annotated/180mV_CTL_heatmap_interferon.png", bg = "white")
+ggsave("annotated/180mV_CTL_heatmap_cpm_interferon.png", bg = "white")
 
 #Perform an exact test for 180mV vs 100mV
 tested <- exactTest(list, pair=c("100mV", "180mV"))
