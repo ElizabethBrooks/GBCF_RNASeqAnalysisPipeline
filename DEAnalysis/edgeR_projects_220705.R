@@ -31,8 +31,6 @@ library(ggplotify)
 #Connect to a an ensembl website mart by specifying a BioMart and dataset parameters
 #Mus_musculus.GRCm39
 ensembl = useEnsembl(biomart="ensembl", dataset="mmusculus_gene_ensembl")
-#Homo_sapiens.GRCh38
-#ensembl = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
 
 #View available attributes
 #View(listAttributes(ensembl))
@@ -46,7 +44,6 @@ genes_att <- getBM(attributes=c('ensembl_gene_id',
 
 #Retrieve all hallmark gene sets
 h_gene_sets = msigdbr(species = "mouse", category = "H")
-#h_gene_sets = msigdbr(species = "human", category = "H")
 
 #Retrieve the apoptosis gene set
 h_apoptosis <- h_gene_sets %>%
@@ -66,50 +63,23 @@ h_interferon <- h_gene_sets %>%
 
 #Set working directory
 setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq/gene_counts")
-#setwd("/Users/bamflappy/GBCF/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq/gene_counts")
 
 #Import gene count data
-#inputTable <- read.csv(file=args[1], header = TRUE, sep = "\t", row.names="gene")
-#Full set
 inputTable <- read.table(file="220705_Yoon_Adipocyte_Pool2_RNAseq_merged_counts_formatted.txt", header = TRUE, sep = "\t", row.names="gene")
-#inputTable <- read.table(file="220707_Yoon_Jurkat_Pool1_RNAseq_merged_counts_formatted.txt", header = TRUE, sep = "\t", row.names="gene")
 
 #Set working directory
-#No undetermined
-#setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq/subset_noUndetermined")
-#setwd("/Users/bamflappy/GBCF/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq/subset_noUndetermined")
-#DE Adipocyte
 setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq/differential_expression")
-#DE Jurkat
-#setwd("/Users/bamflappy/GBCF/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq/differential_expression")
 
 #Subset the input counts
-#Full set
-#subsetTable <- inputTable
-#No undetermined
-#subsetTable <- inputTable[,1:12]
-#DE Adipocyte
 subsetTable <- inputTable[ , -which(names(inputTable) %in% c("S00", "S01", "S06", "S10"))]
-#DE Jurkat
-#subsetTable <- inputTable[ , -which(names(inputTable) %in% c("S00", "S04", "S07", "S09"))]
 
 #Trim the data table
 countsTable <- head(subsetTable, - 5)
 
 #Set number of samples
-#Full set
-#numSamples <- 13
-#No undetermined
-#numSamples <- 12
-#DE subset
 numSamples <- 9
 
 #Add grouping factor
-#Full set
-#group <- factor(c(rep("100mV",4), rep("180mV",4), rep("CTL",4), "Undetermined"))
-#No undetermined
-#group <- factor(c(rep("100mV",4), rep("180mV",4), rep("CTL",4)))
-#DE subset
 group <- factor(c(rep("100mV",3), rep("180mV",3), rep("CTL",3)))
 
 #Create DGE list object
@@ -143,11 +113,6 @@ write.table(normList, file="normalized_counts.csv", sep=",", row.names=TRUE)
 #Draw a MDS plot to show the relative similarities of the samples
 # and to view batch and treatment effects after normalization
 jpeg("plotMDS_afterNormalize.jpg")
-#Full set
-#plotMDS(list)
-#No undetermined
-#plotMDS(list, col=rep(1:3, each=4))
-#DE
 plotMDS(list, col=rep(1:3, each=3))
 dev.off()
 #Draw a heatmap of individual RNA-seq samples using moderated
@@ -168,8 +133,15 @@ dev.off()
 
 #DEA Stage
 
-#Setup color vector for plotting
-color_subset <- c("#0000FF", "#000000", "#FF0000")
+#View color blind safe colors
+#palette.colors(palette = "Okabe-Ito")
+#hcl.colors(n = 5, palette = "Blue-Red")
+#hcl.colors(n = 5, palette = "Inferno")
+
+#Setup color blind safe color vectors for plotting
+color_range <- c("#023FA5", "#000000", "#8E063B")
+color_groups <- list(group=c("100mV"="#FFFE9E", "180mV"="#F69422", CTL="#040404"))
+color_heat <- hcl.colors(n = 3, palette = "Blue-Red")
 
 #Prepare a gene counts table
 sample_counts <- data.frame(logcpm) %>% rownames_to_column(var="gene")
@@ -194,12 +166,11 @@ resultsTbl$sigDE <- "NA"
 resultsTbl$sigDE[resultsTbl$logFC > 1 & resultsTbl$FDR < 0.05] <- "UP"
 resultsTbl$sigDE[resultsTbl$logFC < -1 & resultsTbl$FDR < 0.05] <- "DOWN"
 #Create volcano plot
-jpeg("100mV_CTL_plotVolcano.jpg")
 ggplot(data=resultsTbl, aes(x=logFC, y=-log10(FDR), color = sigDE)) + 
   geom_point() +
   theme_minimal() +
-  scale_colour_discrete(type = color_subset)
-dev.off()
+  scale_colour_discrete(type = color_range)
+ggsave("100mV_CTL_plotVolcano.png", bg = "white")
 #Remove the sigDE column
 resultsTbl_clean <- resultsTbl[ , -which(names(resultsTbl) %in% c("sigDE"))]
 #Return all rows from resultsTbl_clean and genes_att
@@ -233,18 +204,26 @@ rownames(resultsTbl_interferon_filt) <- resultsTbl_interferon$external_gene_name
 resultsTbl_interferon_filt <- head(resultsTbl_interferon_filt, n = 20)
 #Create heatmap for resultsTbl_apoptosis_filt
 as.ggplot(pheatmap(resultsTbl_apoptosis_filt, scale="row", annotation_col = exp_factor,
+                   annotation_colors=color_groups,
+                   color=colorRampPalette(color_heat)(50),
                    main="100mV vs CTL Apoptosis Response"))
 ggsave("annotated/100mV_CTL_heatmap_apoptosis.png", bg = "white")
 #Create heatmap for resultsTbl_inflammatory_filt
 as.ggplot(pheatmap(resultsTbl_inflammatory_filt, scale="row", annotation_col = exp_factor,
+                   annotation_colors=color_groups,
+                   color=colorRampPalette(color_heat)(50),
                    main="100mV vs CTL Inflammatory Response"))
 ggsave("annotated/100mV_CTL_heatmap_inflammatory.png", bg = "white")
 #Create heatmap for resultsTbl_tnfa_filt
 as.ggplot(pheatmap(resultsTbl_tnfa_filt, scale="row", annotation_col = exp_factor,
+                   annotation_colors=color_groups,
+                   color=colorRampPalette(color_heat)(50),
                    main="100mV vs CTL TNF Alpha Response"))
 ggsave("annotated/100mV_CTL_heatmap_tnfa.png", bg = "white")
 #Create heatmap for resultsTbl_interferon_filt
 as.ggplot(pheatmap(resultsTbl_interferon_filt, scale="row", annotation_col = exp_factor,
+                   annotation_colors=color_groups,
+                   color=colorRampPalette(color_heat)(50),
                    main="100mV vs CTL Interferon Alpha Response"))
 ggsave("annotated/100mV_CTL_heatmap_interferon.png", bg = "white")
 
@@ -264,12 +243,11 @@ resultsTbl$sigDE <- "NA"
 resultsTbl$sigDE[resultsTbl$logFC > 1 & resultsTbl$FDR < 0.05] <- "UP"
 resultsTbl$sigDE[resultsTbl$logFC < -1 & resultsTbl$FDR < 0.05] <- "DOWN"
 #Create volcano plot
-jpeg("180mV_CTL_plotVolcano.jpg")
 ggplot(data=resultsTbl, aes(x=logFC, y=-log10(FDR), color = sigDE)) + 
   geom_point() +
   theme_minimal() +
-  scale_colour_discrete(type = color_subset)
-dev.off()
+  scale_colour_discrete(type = color_range)
+ggsave("180mV_CTL_plotVolcano.png", bg = "white")
 #Remove the sigDE column
 resultsTbl_clean <- resultsTbl[ , -which(names(resultsTbl) %in% c("sigDE"))]
 #Return all rows from resultsTbl_clean and genes_att
@@ -303,18 +281,26 @@ rownames(resultsTbl_interferon_filt) <- resultsTbl_interferon$external_gene_name
 resultsTbl_interferon_filt <- head(resultsTbl_interferon_filt, n = 20)
 #Create heatmap for resultsTbl_apoptosis_filt
 as.ggplot(pheatmap(resultsTbl_apoptosis_filt, scale="row", annotation_col = exp_factor,
+                   annotation_colors=color_groups,
+                   color=colorRampPalette(color_heat)(50),
                    main="180mV vs CTL Apoptosis Response"))
 ggsave("annotated/180mV_CTL_heatmap_apoptosis.png", bg = "white")
 #Create heatmap for resultsTbl_inflammatory_filt
 as.ggplot(pheatmap(resultsTbl_inflammatory_filt, scale="row", annotation_col = exp_factor,
+                   annotation_colors=color_groups,
+                   color=colorRampPalette(color_heat)(50),
                    main="180mV vs CTL Inflammatory Response"))
 ggsave("annotated/180mV_CTL_heatmap_inflammatory.png", bg = "white")
 #Create heatmap for resultsTbl_tnfa_filt
 as.ggplot(pheatmap(resultsTbl_tnfa_filt, scale="row", annotation_col = exp_factor,
+                   annotation_colors=color_groups,
+                   color=colorRampPalette(color_heat)(50),
                    main="180mV vs CTL TNF Alpha Response"))
 ggsave("annotated/180mV_CTL_heatmap_tnfa.png", bg = "white")
 #Create heatmap for resultsTbl_interferon_filt
 as.ggplot(pheatmap(resultsTbl_interferon_filt, scale="row", annotation_col = exp_factor,
+                   annotation_colors=color_groups,
+                   color=colorRampPalette(color_heat)(50),
                    main="180mV vs CTL Interferon Alpha Response"))
 ggsave("annotated/180mV_CTL_heatmap_interferon.png", bg = "white")
 
@@ -334,12 +320,11 @@ resultsTbl$sigDE <- "NA"
 resultsTbl$sigDE[resultsTbl$logFC > 1 & resultsTbl$FDR < 0.05] <- "UP"
 resultsTbl$sigDE[resultsTbl$logFC < -1 & resultsTbl$FDR < 0.05] <- "DOWN"
 #Create volcano plot
-jpeg("180mV_100mV_plotVolcano.jpg")
 ggplot(data=resultsTbl, aes(x=logFC, y=-log10(FDR), color = sigDE)) + 
   geom_point() +
   theme_minimal() +
-  scale_colour_discrete(type = color_subset)
-dev.off()
+  scale_colour_discrete(type = color_range)
+ggsave("180mV_100mV_plotVolcano.png", bg = "white")
 #Remove the sigDE column
 resultsTbl_clean <- resultsTbl[ , -which(names(resultsTbl) %in% c("sigDE"))]
 #Return all rows from resultsTbl_clean and genes_att
