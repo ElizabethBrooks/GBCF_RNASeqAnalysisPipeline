@@ -70,13 +70,6 @@ list <- DGEList(counts=countsTable,group=group)
 libraries <- data.frame(
   samples = names(countsTable),
   sizes = list$samples$lib.size*1e-6)
-#Plot the library sizes before normalization
-#barplot(list$samples$lib.size*1e-6, names=1:numSamples, ylab="Library size (millions)")
-jpeg("plotBars_librarySizes.jpg")
-ggplot(data = libraries, aes(x = samples, y = sizes)) + 
-  geom_bar(stat="identity") +
-  labs(x = "Sample", y="Library size (millions)")
-dev.off()
 
 #There is no purpose in analyzing genes that are not expressed in either 
 # experimental condition, so genes are first filtered on expression levels
@@ -86,32 +79,13 @@ list <- list[keep, , keep.lib.sizes=FALSE]
 list <- calcNormFactors(list)
 #Write normalized counts to file
 normList <- cpm(list, normalized.lib.sizes=TRUE)
-write.table(normList, file="normalized_counts.csv", sep=",", row.names=TRUE)
 
-#Draw a MDS plot to show the relative similarities of the samples
-# and to view batch and treatment effects after normalization
-jpeg("plotMDS_afterNormalize.jpg")
-#Full set
-#plotMDS(list)
-#No undetermined
-#plotMDS(list, col=rep(1:3, each=4))
-#DE
-plotMDS(list, col=rep(1:3, each=3))
-dev.off()
-#Draw a heatmap of individual RNA-seq samples using moderated
-# log-counts-per-million after normalization
-jpeg("plotHeatMap_afterNormalize.jpg")
+#Retrieve log-counts-per-million after normalization
 logcpm <- cpm(list, log=TRUE)
-heatmap(logcpm)
-dev.off()
 
 #Produce a matrix of pseudo-counts
 #Estimate common dispersion and tagwise dispersions
 list <- estimateDisp(list)
-#View dispersion estimates and biological coefficient of variation
-jpeg("plotBCV.jpg")
-plotBCV(list)
-dev.off()
 
 
 #DEA Stage
@@ -123,13 +97,6 @@ color_subset <- c("#0000FF", "#000000", "#FF0000")
 tested <- exactTest(list, pair=c("CTL", "100mV"))
 #Create results table of DE genes
 resultsTbl <- topTags(tested, n=nrow(tested$table))$table
-write.table(resultsTbl, file="100mV_CTL_topTags.csv", sep=",", row.names=TRUE)
-#Plot log-fold change against log-counts per million, with DE genes highlighted
-#The blue lines indicate 2-fold changes
-jpeg("100mV_CTL_plotMD.jpg")
-plotMD(tested)
-abline(h=c(-1, 1), col="grey")
-dev.off()
 #Identify significantly DE genes
 resultsTbl$sigDE <- "NA"
 resultsTbl$sigDE[resultsTbl$logFC > 1 & resultsTbl$FDR < 0.05] <- "UP"
@@ -146,13 +113,6 @@ dev.off()
 tested <- exactTest(list, pair=c("CTL", "180mV"))
 #Create results table of DE genes
 resultsTbl <- topTags(tested, n=nrow(tested$table))$table
-write.table(resultsTbl, file="180mV_CTL_topTags.csv", sep=",", row.names=TRUE)
-#Plot log-fold change against log-counts per million, with DE genes highlighted
-#The blue lines indicate 2-fold changes
-jpeg("180mV_CTL_plotMD.jpg")
-plotMD(tested)
-abline(h=c(-1, 1), col="grey")
-dev.off()
 #Identify significantly DE genes
 resultsTbl$sigDE <- "NA"
 resultsTbl$sigDE[resultsTbl$logFC > 1 & resultsTbl$FDR < 0.05] <- "UP"
@@ -169,13 +129,6 @@ dev.off()
 tested <- exactTest(list, pair=c("100mV", "180mV"))
 #Create results table of DE genes
 resultsTbl <- topTags(tested, n=nrow(tested$table))$table
-write.table(resultsTbl, file="180mV_100mV_topTags.csv", sep=",", row.names=TRUE)
-#Plot log-fold change against log-counts per million, with DE genes highlighted
-#The blue lines indicate 2-fold changes
-jpeg("180mV_100mV_plotMD.jpg")
-plotMD(tested)
-abline(h=c(-1, 1), col="grey")
-dev.off()
 #Identify significantly DE genes
 resultsTbl$sigDE <- "NA"
 resultsTbl$sigDE[resultsTbl$logFC > 1 & resultsTbl$FDR < 0.05] <- "UP"
