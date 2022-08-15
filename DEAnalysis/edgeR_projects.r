@@ -30,9 +30,9 @@ library(ggplotify)
 
 #Connect to a an ensembl website mart by specifying a BioMart and dataset parameters
 #Mus_musculus.GRCm39
-ensembl = useEnsembl(biomart="ensembl", dataset="mmusculus_gene_ensembl")
+#ensembl = useEnsembl(biomart="ensembl", dataset="mmusculus_gene_ensembl")
 #Homo_sapiens.GRCh38
-#ensembl = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
+ensembl = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
 
 #Retrieve gene attributes
 genes_att <- getBM(attributes=c('ensembl_gene_id',
@@ -42,7 +42,8 @@ genes_att <- getBM(attributes=c('ensembl_gene_id',
                    mart = ensembl)
 
 #Retrieve all hallmark gene sets
-h_gene_sets = msigdbr(species = "mouse", category = "H")
+#h_gene_sets = msigdbr(species = "mouse", category = "H")
+h_gene_sets = msigdbr(species = "human", category = "H")
 
 #Retrieve the apoptosis gene set
 h_apoptosis <- h_gene_sets %>%
@@ -61,22 +62,23 @@ h_interferon <- h_gene_sets %>%
   dplyr::filter(gs_name == "HALLMARK_INTERFERON_ALPHA_RESPONSE")
 
 #Set working directory
-setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq/gene_counts")
-#setwd("/Users/bamflappy/GBCF/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq/gene_counts")
+#setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq/gene_counts")
+setwd("/Users/bamflappy/GBCF/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq/gene_counts")
 
 #Import gene count data
 #inputTable <- read.csv(file=args[1], header = TRUE, sep = "\t", row.names="gene")
 #Full set
-inputTable <- read.table(file="220705_Yoon_Adipocyte_Pool2_RNAseq_merged_counts_formatted.txt", header = TRUE, sep = "\t", row.names="gene")
-#inputTable <- read.table(file="220707_Yoon_Jurkat_Pool1_RNAseq_merged_counts_formatted.txt", header = TRUE, sep = "\t", row.names="gene")
+#inputTable <- read.table(file="220705_Yoon_Adipocyte_Pool2_RNAseq_merged_counts_formatted.txt", header = TRUE, sep = "\t", row.names="gene")
+inputTable <- read.table(file="220707_Yoon_Jurkat_Pool1_RNAseq_merged_counts_formatted.txt", header = TRUE, sep = "\t", row.names="gene")
 
 #Set working directory
 #No undetermined
 #setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq/subset_noUndetermined")
 #setwd("/Users/bamflappy/GBCF/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq/subset_noUndetermined")
-#DE
-setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq/differential_expression")
-#setwd("/Users/bamflappy/GBCF/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq/differential_expression")
+#DE Adipocyte
+#setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq/differential_expression")
+#DE Jurkat
+setwd("/Users/bamflappy/GBCF/yoon_July2022/220707_Yoon_Jurkat_Pool1_RNAseq/differential_expression")
 
 #Subset the input counts
 #Full set
@@ -84,9 +86,9 @@ setwd("/Users/bamflappy/GBCF/yoon_July2022/220705_Yoon_Adipocyte_Pool2_RNAseq/di
 #No undetermined
 #subsetTable <- inputTable[,1:12]
 #DE Adipocyte
-subsetTable <- inputTable[ , -which(names(inputTable) %in% c("S00", "S01", "S06", "S10"))]
+#subsetTable <- inputTable[ , -which(names(inputTable) %in% c("S00", "S01", "S06", "S10"))]
 #DE Jurkat
-#subsetTable <- inputTable[ , -which(names(inputTable) %in% c("S00", "S04", "S07", "S09"))]
+subsetTable <- inputTable[ , -which(names(inputTable) %in% c("S00", "S04", "S07", "S09"))]
 
 #Trim the data table
 countsTable <- head(subsetTable, - 5)
