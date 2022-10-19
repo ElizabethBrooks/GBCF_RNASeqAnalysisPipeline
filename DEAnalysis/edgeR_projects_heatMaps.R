@@ -137,7 +137,7 @@ list <- estimateDisp(list)
 
 #DEA Stage
 
-#Setup color vector for plotting
+#Setup color blind appropriate vector for plotting
 color_subset <- c("#0000FF", "#000000", "#FF0000")
 
 #Prepare a gene counts table
