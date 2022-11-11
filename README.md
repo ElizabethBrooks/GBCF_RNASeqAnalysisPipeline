@@ -24,7 +24,7 @@ Repository for scripts used to perform the following analysis of short paired-en
 * To run a compiled trimming script: **./*SCRIPTNAME*.sh** **INPUT_1 ... INPUT_N** 
 
 ### Resources
- - [Bioinformatics Analysis of Omics Data with the Shell & R](https://morphoscape.wordpress.com/2022/07/28/bioinformatics-analysis-of-omics-data-with-the-shell-r/)
+- [Bioinformatics Analysis of Omics Data with the Shell & R](https://morphoscape.wordpress.com/2022/07/28/bioinformatics-analysis-of-omics-data-with-the-shell-r/)
 - [Downstream Bioinformatics Analysis of Omics Data with edgeR](https://morphoscape.wordpress.com/2022/08/09/downstream-bioinformatics-analysis-of-omics-data-with-edger/)
 - [Gene Transcription at Real-Time Speed](https://twitter.com/Innov_Medicine/status/1588155101075603456)
 - [RNA-seq Library Types and Methods](https://bgreat.tistory.com/100)
