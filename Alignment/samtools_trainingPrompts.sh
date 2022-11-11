@@ -1,10 +1,10 @@
 #!/bin/bash
 ## job script header that requests 8 threads
 
-#Script to perform samtools sorting of trimmed and aligned paired end reads
-#Usage: sbatch samtools_trainingPrompts.sh inputsFile outputsFile
-#Usage Ex: sbatch samtools_trainingPrompts.sh /YOUR/PATH/adipocyte/aligned /YOUR/PATH/adipocyte
-#Usage Ex: sbatch samtools_trainingPrompts.sh /YOUR/PATH/jurkat/aligned /YOUR/PATH/jurkat
+# script to perform samtools sorting of trimmed and aligned paired end reads
+# usage: sbatch samtools_trainingPrompts.sh inputsFile outputsFile
+# usage Ex: sbatch samtools_trainingPrompts.sh /YOUR/PATH/adipocyte/aligned /YOUR/PATH/adipocyte
+# usage Ex: sbatch samtools_trainingPrompts.sh /YOUR/PATH/jurkat/aligned /YOUR/PATH/jurkat
 
 # required software for OSCER
 
@@ -13,9 +13,6 @@
 
 
 # retrieve analysis outputs absolute path
-
-
-# retrieve adapter absolute path for alignment
 
 
 # make a new directory for project analysis files

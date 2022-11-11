@@ -1,10 +1,10 @@
 #!/bin/bash
 ## job script header that requests 8 threads
 
-#Script to perform hisat2 alignment of trimmed paired end reads
-#Usage: sbatch hisat2_trainingPrompts.sh inputsFile outputsFile referenceGenome
-#Usage Ex: sbatch hisat2_trainingPrompts.sh /YOUR/PATH/adipocyte/aligned /YOUR/PATH/adipocyte /YOUR/PATH/adipocyte/....fa
-#Usage Ex: sbatch hisat2_trainingPrompts.sh /YOUR/PATH/jurkat/aligned /YOUR/PATH/jurkat /YOUR/PATH/jurkat/....fa
+# script to perform hisat2 alignment of trimmed paired end reads
+# usage: sbatch hisat2_trainingPrompts.sh inputsFile outputsFile referenceGenome
+# usage Ex: sbatch hisat2_trainingPrompts.sh /YOUR/PATH/adipocyte/aligned /YOUR/PATH/adipocyte /YOUR/PATH/adipocyte/....fa
+# usage Ex: sbatch hisat2_trainingPrompts.sh /YOUR/PATH/jurkat/aligned /YOUR/PATH/jurkat /YOUR/PATH/jurkat/....fa
 
 # required software for OSCER
 
@@ -13,6 +13,9 @@
 
 
 # retrieve analysis outputs absolute path
+
+
+# retrieve reference genome absolute path
 
 
 # retrieve adapter absolute path for alignment
