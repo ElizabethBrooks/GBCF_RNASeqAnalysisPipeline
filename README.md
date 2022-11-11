@@ -4,8 +4,8 @@ Repository for scripts used to perform the following analysis of short paired-en
 - Gene ontology (GO) term enrichment
 - Gene set enrichment (GSE)
 
-## RNA-seq Analysis Pipeline - Genome Guided Assembly
-![RNA-seq Analysis Pipeline - Genome Guided Assembly](RNASeqWorkflow_dmelUV.png)
+## RNA-seq Analysis Pipeline
+![RNA-seq Analysis Pipeline](RNASeqWorkflow_dmelUV.png)
 
 ## Running Scripts
 * The input and output paths need to be set using the *inputPaths.txt* and *outputPaths.txt* files in the *InputData* directory.
