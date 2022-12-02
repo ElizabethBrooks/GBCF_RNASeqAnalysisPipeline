@@ -4,8 +4,8 @@ Repository for scripts used to perform the following analysis of short paired-en
 - Gene ontology (GO) term enrichment
 - Gene set enrichment (GSE)
 
-## RNA-seq Analysis Pipeline - Genome Guided Assembly
-![RNA-seq Analysis Pipeline - Genome Guided Assembly](RNASeqWorkflow_dmelUV.png)
+## RNA-seq Analysis Pipeline
+![RNA-seq Analysis Pipeline](RNASeqWorkflow_dmelUV.png)
 
 ## Running Scripts
 * The input and output paths need to be set using the *inputPaths.txt* and *outputPaths.txt* files in the *InputData* directory.
@@ -23,11 +23,14 @@ Repository for scripts used to perform the following analysis of short paired-en
 * To compile the script before running: **chmod +x *SCRIPTNAME*.sh**
 * To run a compiled trimming script: **./*SCRIPTNAME*.sh** **INPUT_1 ... INPUT_N** 
 
-### Tutorial - Exact Tests with edgeR
-https://morphoscape.wordpress.com/2020/09/01/exact-tests-and-plots-with-edger-basic-differential-expression-analysis/
-
-### Tutorial - Generalized Liner Models with edgeR
-https://morphoscape.wordpress.com/2020/09/26/generalized-linear-models-and-plots-with-edger-advanced-differential-expression-analysis/
+### Resources
+- [Bioinformatics Analysis of Omics Data with the Shell & R](https://morphoscape.wordpress.com/2022/07/28/bioinformatics-analysis-of-omics-data-with-the-shell-r/)
+- [Downstream Bioinformatics Analysis of Omics Data with edgeR](https://morphoscape.wordpress.com/2022/08/09/downstream-bioinformatics-analysis-of-omics-data-with-edger/)
+- [Gene Transcription at Real-Time Speed](https://twitter.com/Innov_Medicine/status/1588155101075603456)
+- [RNA-seq Library Types and Methods](https://bgreat.tistory.com/100)
+- [Exact or t-Tests Tutorial](https://online.stat.psu.edu/stat555/node/36/)
+- [ANOVA Tutorial](https://online.stat.psu.edu/stat500/lesson/10)
+- [How to Save the Console in RStudio](https://community.rstudio.com/t/how-to-save-the-console-in-r-studio-input-output/8118)
 
 ## Required Software ##
 * [FastQC][10]: A quality control tool for high throughput raw sequence data. It generates quality reports for NGS data and gives pass/fail results for the following checks: Per base sequence quality, Per sequence quality scores, Per base sequence content, Per base GC content, Per sequence GC content, Per base N content, Sequence length distribution, Sequence duplication levels, Overrepresented sequences, Kmer content. It also has a Graphic User Interface.
