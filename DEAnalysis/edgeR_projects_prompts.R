@@ -5,6 +5,11 @@
 # usage Ex: Rscript edgeR_prompts.r /YOUR/PATH/Adipocyte/counted/merged_counts_formatted.txt
 # usage Ex: Rscript edgeR_prompts.r /YOUR/PATH/Jurkat/counted/merged_counts_formatted.txt
 
+
+#
+## Setup Stage
+#
+
 # set working directory
 
 
@@ -53,8 +58,9 @@
 # create DGE list object
 
 
+
 #
-## Prep Stage
+## Analysis Prep Stage
 #
 
 # retrieve library sizes
