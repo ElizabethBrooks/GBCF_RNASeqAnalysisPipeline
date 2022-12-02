@@ -21,15 +21,6 @@
 # make a new directory for project analysis files
 
 
-# name of a new directory for outputs of this analysis stage
-
-
-# make the new outputs directory
-
-
-# move to the outputs directory
-
-
 # name tmp guide file for merging
 
 
